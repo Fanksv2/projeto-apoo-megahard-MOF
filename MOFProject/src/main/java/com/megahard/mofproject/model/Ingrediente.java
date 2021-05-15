@@ -11,5 +11,13 @@ package com.megahard.mofproject.model;
  */
 public class Ingrediente {
     private char nome;
+
+    public char getNome() {
+        return nome;
+    }
+
+    public void setNome(char nome) {
+        this.nome = nome;
+    }
     
 }

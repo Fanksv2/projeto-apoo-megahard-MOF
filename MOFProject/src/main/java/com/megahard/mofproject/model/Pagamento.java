@@ -5,6 +5,7 @@
  */
 package com.megahard.mofproject.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,5 +14,31 @@ import java.util.List;
  */
 public class Pagamento {
     private List<Pedido> pedidos;
+    private List<Comanda> comandas = new ArrayList <>();
+    private NotaFiscal notaFiscal;
+
+    public List<Pedido> getPedidos() {
+        return pedidos;
+    }
+
+    public void setPedidos(List<Pedido> pedidos) {
+        this.pedidos = pedidos;
+    }
+
+    public List<Comanda> getComandas() {
+        return comandas;
+    }
+
+    public void setComandas(List<Comanda> comandas) {
+        this.comandas = comandas;
+    }
+
+    public NotaFiscal getNotaFiscal() {
+        return notaFiscal;
+    }
+
+    public void setNotaFiscal(NotaFiscal notaFiscal) {
+        this.notaFiscal = notaFiscal;
+    }
     
 }

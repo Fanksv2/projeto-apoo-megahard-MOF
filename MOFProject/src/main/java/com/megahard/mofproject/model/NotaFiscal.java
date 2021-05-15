@@ -10,7 +10,23 @@ package com.megahard.mofproject.model;
  * @author rafae
  */
 public class NotaFiscal {
-    private char cpf;
+    private String cpf;
     private float valor;
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public float getValor() {
+        return valor;
+    }
+
+    public void setValor(float valor) {
+        this.valor = valor;
+    }
     
 }
