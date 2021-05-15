@@ -10,5 +10,6 @@ package com.megahard.mofproject.model;
  * @author rafae
  */
 public class EstoqueDeItem {
+    private int qntItemEstoque;
     
 }

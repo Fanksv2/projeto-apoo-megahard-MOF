@@ -5,10 +5,13 @@
  */
 package com.megahard.mofproject.model;
 
+import java.util.List;
+
 /**
  *
  * @author rafae
  */
 public class Pagamento {
+    private List<Pedido> pedidos;
     
 }

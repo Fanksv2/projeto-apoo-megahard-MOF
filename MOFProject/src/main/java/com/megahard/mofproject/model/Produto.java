@@ -10,5 +10,6 @@ package com.megahard.mofproject.model;
  * @author rafae
  */
 public class Produto {
-    
+        private char nomeProduto;
+        private float preco;
 }

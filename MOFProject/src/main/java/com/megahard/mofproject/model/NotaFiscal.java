@@ -10,5 +10,7 @@ package com.megahard.mofproject.model;
  * @author rafae
  */
 public class NotaFiscal {
+    private char cpf;
+    private float valor;
     
 }
