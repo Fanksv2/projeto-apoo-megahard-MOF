@@ -62,6 +62,11 @@ public class TelaPagamento extends javax.swing.JFrame {
         jLabel2.setText("Comanda:");
 
         btOk.setText("OK");
+        btOk.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btOkActionPerformed(evt);
+            }
+        });
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -307,6 +312,10 @@ public class TelaPagamento extends javax.swing.JFrame {
         dispose();
         
     }//GEN-LAST:event_btSairActionPerformed
+
+    private void btOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btOkActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btOkActionPerformed
 
     /**
      * @param args the command line arguments

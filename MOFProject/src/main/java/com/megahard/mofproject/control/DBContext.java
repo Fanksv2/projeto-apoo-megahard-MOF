@@ -2,6 +2,7 @@ package com.megahard.mofproject.control;
 
 import com.megahard.mofproject.model.Comanda;
 import com.megahard.mofproject.model.Estoque;
+import com.megahard.mofproject.model.EstoqueItem;
 import com.megahard.mofproject.model.Ingrediente;
 import com.megahard.mofproject.model.NotaFiscal;
 import com.megahard.mofproject.model.Pagamento;
@@ -12,13 +13,14 @@ import java.util.ArrayList;
 
 public class DBContext {
     private static DBContext instance;
+    
     private List<NotaFiscal> dbNotaFiscal;
     private List<Pagamento> dbPagamento;
     private List<Comanda> dbComanda;
     private List<Pedido> dbPedido;
     private List<Produto> dbProduto;
     private List<Ingrediente> dbIngrediente;
-    private List<Estoque> dbEstoque;
+    private List<EstoqueItem> dbEstoque;
     
     private DBContext(){
         dbNotaFiscal = new ArrayList<>();
@@ -61,7 +63,7 @@ public class DBContext {
         return dbIngrediente;
     }
 
-    public List<Estoque> getDbEstoque() {
+    public List<EstoqueItem> getDbEstoque() {
         return dbEstoque;
     } 
 }

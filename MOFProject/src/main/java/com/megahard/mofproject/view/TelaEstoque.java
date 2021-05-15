@@ -5,6 +5,16 @@
  */
 package com.megahard.mofproject.view;
 
+import com.megahard.mofproject.control.DBContext;
+import com.megahard.mofproject.model.EstoqueItem;
+import com.megahard.mofproject.model.Ingrediente;
+import com.megahard.mofproject.model.Produto;
+import com.megahard.mofproject.utils.ListUtils;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import sun.applet.Main;
+
 /**
  *
  * @author rafae
@@ -16,7 +26,12 @@ public class TelaEstoque extends javax.swing.JFrame {
      */
     public TelaEstoque() {
         initComponents();
+        ListUtils.populateIngredientes();
+        ListUtils.populateProdutos();
+        List<Produto> produtos = DBContext.getInstance().getDbProduto();
+
     }
+ 
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -30,23 +45,23 @@ public class TelaEstoque extends javax.swing.JFrame {
         btSair = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tabelaEstoque = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
-        qntSelectText = new javax.swing.JTextField();
+        qntSelecionado = new javax.swing.JTextField();
         btMais = new javax.swing.JButton();
         btMenos = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         btSave = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
+        nomeSelecionado = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         btCadastro = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        nomeCadText = new javax.swing.JTextField();
-        quantCadText = new javax.swing.JTextField();
+        nomeNovoItem = new javax.swing.JTextField();
+        quantNovoItem = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -60,8 +75,8 @@ public class TelaEstoque extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Arial Black", 0, 24)); // NOI18N
         jLabel1.setText("Controle de Estoque");
 
-        jTable1.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tabelaEstoque.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        tabelaEstoque.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null},
                 {null, null}
@@ -69,18 +84,31 @@ public class TelaEstoque extends javax.swing.JFrame {
             new String [] {
                 "ITEM CADASTRADO NO ESTOQUE", "QTD"
             }
-        ));
-        jTable1.setToolTipText("");
-        jScrollPane3.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(1).setMaxWidth(150);
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tabelaEstoque.setToolTipText("");
+        tabelaEstoque.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                tabelaEstoqueFocusGained(evt);
+            }
+        });
+        jScrollPane3.setViewportView(tabelaEstoque);
+        if (tabelaEstoque.getColumnModel().getColumnCount() > 0) {
+            tabelaEstoque.getColumnModel().getColumn(1).setMaxWidth(150);
         }
 
         jPanel1.setBorder(new javax.swing.border.MatteBorder(null));
 
-        qntSelectText.addActionListener(new java.awt.event.ActionListener() {
+        qntSelecionado.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                qntSelectTextActionPerformed(evt);
+                qntSelecionadoActionPerformed(evt);
             }
         });
 
@@ -117,11 +145,11 @@ public class TelaEstoque extends javax.swing.JFrame {
                                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGap(63, 63, 63)
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(nomeSelecionado, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGroup(jPanel1Layout.createSequentialGroup()
                                             .addComponent(btMenos)
                                             .addGap(18, 18, 18)
-                                            .addComponent(qntSelectText, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(qntSelecionado, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addGap(18, 18, 18)
                                             .addComponent(btMais)))))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -137,12 +165,12 @@ public class TelaEstoque extends javax.swing.JFrame {
                 .addGap(38, 38, 38)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(nomeSelecionado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(30, 30, 30)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btMenos)
-                    .addComponent(qntSelectText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(qntSelecionado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btMais))
                 .addGap(61, 61, 61)
                 .addComponent(btSave, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -164,6 +192,12 @@ public class TelaEstoque extends javax.swing.JFrame {
 
         jLabel7.setText("Quantidade");
 
+        quantNovoItem.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                quantNovoItemKeyTyped(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -174,9 +208,9 @@ public class TelaEstoque extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(87, 87, 87)
-                .addComponent(nomeCadText, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(nomeNovoItem, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(quantCadText, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(quantNovoItem, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(29, 29, 29)
                 .addComponent(btCadastro, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -197,14 +231,15 @@ public class TelaEstoque extends javax.swing.JFrame {
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel6)
                             .addComponent(jLabel7))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
+                        .addComponent(btCadastro)
+                        .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 64, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(nomeCadText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(quantCadText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btCadastro))
-                        .addGap(26, 26, 26))))
+                            .addComponent(nomeNovoItem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(quantNovoItem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(28, 28, 28))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -236,7 +271,7 @@ public class TelaEstoque extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
@@ -257,14 +292,73 @@ public class TelaEstoque extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_btMenosActionPerformed
 
-    private void qntSelectTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qntSelectTextActionPerformed
+    private void qntSelecionadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qntSelecionadoActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_qntSelectTextActionPerformed
+    }//GEN-LAST:event_qntSelecionadoActionPerformed
 
     private void btCadastroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCadastroActionPerformed
         // TODO add your handling code here:
+        //Cadastrar um novo item
+        String nomeItem = nomeNovoItem.getText();
+        String sQtdItem = quantNovoItem.getText();
+        if(nomeItem.isEmpty() || sQtdItem.isEmpty()){
+            return;
+        }
+        
+        int qtdItem = Integer.parseInt(sQtdItem);
+        
+        boolean alreadyExists = false;
+        for(EstoqueItem ei : DBContext.getInstance().getDbEstoque()){
+            if(ei.getIngrediente().getNome().equals(nomeItem)){
+                alreadyExists = true;
+            }
+        }
+        if(alreadyExists){
+            //TO DO: Implement a pop up for a error
+            return;
+        }
+        
+        Ingrediente ingrediente = new Ingrediente();
+        ingrediente.setNome(nomeItem);
+        
+        EstoqueItem estoqueItem = new EstoqueItem();
+        estoqueItem.setIngrediente(ingrediente);
+        estoqueItem.setQntItemEstoque(qtdItem);
+        
+        DBContext.getInstance().getDbEstoque().add(estoqueItem);
+        
+        atualizarTabelaEstoque();
     }//GEN-LAST:event_btCadastroActionPerformed
 
+    private void quantNovoItemKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_quantNovoItemKeyTyped
+        // TODO add your handling code here:
+        char c = evt.getKeyChar();
+        
+        if(!Character.isDigit(c)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_quantNovoItemKeyTyped
+
+    private void tabelaEstoqueFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tabelaEstoqueFocusGained
+        // TODO add your handling code here:
+        int column = 0;
+        int row = tabelaEstoque.getSelectedRow();
+        String value = tabelaEstoque.getModel().getValueAt(row, column).toString();
+    }//GEN-LAST:event_tabelaEstoqueFocusGained
+
+    
+    private void atualizarTabelaEstoque(){
+        DefaultTableModel model = (DefaultTableModel) tabelaEstoque.getModel();
+        int rowCount = model.getRowCount();
+        //Remove rows one by one from the end of the table
+        for (int i = rowCount - 1; i >= 0; i--) {
+            model.removeRow(i);
+        }
+        List<EstoqueItem> estItens = DBContext.getInstance().getDbEstoque();
+        for(EstoqueItem estItem : estItens){   
+            model.addRow(new Object[]{estItem.getIngrediente().getNome(), estItem.getQntItemEstoque()});
+        }
+    }
     /**
      * @param args the command line arguments
      */
@@ -316,10 +410,10 @@ public class TelaEstoque extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField nomeCadText;
-    private javax.swing.JTextField qntSelectText;
-    private javax.swing.JTextField quantCadText;
+    private javax.swing.JTextField nomeNovoItem;
+    private javax.swing.JTextField nomeSelecionado;
+    private javax.swing.JTextField qntSelecionado;
+    private javax.swing.JTextField quantNovoItem;
+    private javax.swing.JTable tabelaEstoque;
     // End of variables declaration//GEN-END:variables
 }
