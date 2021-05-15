@@ -29,7 +29,7 @@ public class TelaCadastroPedido extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        TabelaProduto = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -44,29 +44,26 @@ public class TelaCadastroPedido extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Arial Black", 0, 24)); // NOI18N
         jLabel1.setText("CADASTRO DE PEDIDOS");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        TabelaProduto.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
+                {null},
+                {null},
+                {null},
+                {null}
             },
             new String [] {
-                "PRODUTO", "QTD"
+                "PRODUTO"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false
+                false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(1).setMaxWidth(120);
-        }
+        jScrollPane1.setViewportView(TabelaProduto);
 
         jPanel1.setBorder(new javax.swing.border.MatteBorder(null));
 
@@ -203,6 +200,7 @@ public class TelaCadastroPedido extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable TabelaProduto;
     private javax.swing.JButton btCadastrar;
     private javax.swing.JButton btSair;
     private javax.swing.JLabel jLabel1;
@@ -211,7 +209,6 @@ public class TelaCadastroPedido extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTextField produtoText;
     private javax.swing.JTextField qtdText;
     // End of variables declaration//GEN-END:variables
