@@ -31,5 +31,10 @@ public class EstoqueItem {
     public void setIngrediente(Ingrediente ingrediente) {
         this.ingrediente = ingrediente;
     }
+
+    @Override
+    public String toString() {
+        return "EstoqueItem{" + "qntItemEstoque=" + qntItemEstoque + ", ingrediente=" + ingrediente + '}';
+    }
     
 }
