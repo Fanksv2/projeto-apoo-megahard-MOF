@@ -10,14 +10,19 @@ package com.megahard.mofproject.model;
  * @author rafae
  */
 public class Ingrediente {
-    private char nome;
+    private String nome;
 
-    public char getNome() {
+    public String getNome() {
         return nome;
     }
 
-    public void setNome(char nome) {
+    public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    @Override
+    public String toString() {
+        return "Ingrediente{" + "nome=" + nome + '}';
     }
     
 }

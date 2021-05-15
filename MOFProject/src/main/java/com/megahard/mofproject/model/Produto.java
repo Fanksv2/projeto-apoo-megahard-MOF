@@ -13,15 +13,15 @@ import java.util.List;
  * @author rafae
  */
 public class Produto {
-        private char nomeProduto;
+        private String nomeProduto;
         private float preco;
         private List<QuantidadeIngrediente> quantidadeIngredientes = new ArrayList <>();
 
-    public char getNomeProduto() {
+    public String getNomeProduto() {
         return nomeProduto;
     }
 
-    public void setNomeProduto(char nomeProduto) {
+    public void setNomeProduto(String nomeProduto) {
         this.nomeProduto = nomeProduto;
     }
 
@@ -40,5 +40,9 @@ public class Produto {
     public void setQuantidadeIngredientes(List<QuantidadeIngrediente> quantidadeIngredientes) {
         this.quantidadeIngredientes = quantidadeIngredientes;
     }
-        
+
+    @Override
+    public String toString() {
+        return "Produto{" + "nomeProduto=" + nomeProduto + ", preco=" + preco + ", quantidadeIngredientes=" + quantidadeIngredientes + '}';
+    }
 }
