@@ -5,20 +5,23 @@
  */
 package com.megahard.mofproject.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author rafae
  */
-public class QuantidadeIngrediente {
-    private int quantidadeNecessaria;
+public class EstoqueItem {
+    private int qntItemEstoque;
     private Ingrediente ingrediente;
 
-    public int getQuantidadeNecessaria() {
-        return quantidadeNecessaria;
+    public int getQntItemEstoque() {
+        return qntItemEstoque;
     }
 
-    public void setQuantidadeNecessaria(int quantidadeNecessaria) {
-        this.quantidadeNecessaria = quantidadeNecessaria;
+    public void setQntItemEstoque(int qntItemEstoque) {
+        this.qntItemEstoque = qntItemEstoque;
     }
 
     public Ingrediente getIngrediente() {
