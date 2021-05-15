@@ -28,5 +28,12 @@ public class QuantidadeIngrediente {
     public void setIngrediente(Ingrediente ingrediente) {
         this.ingrediente = ingrediente;
     }
+
+    @Override
+    public String toString() {
+        return "QuantidadeIngrediente{" + "quantidadeNecessaria=" + quantidadeNecessaria + ", ingrediente=" + ingrediente + '}';
+    }
+    
+    
     
 }
