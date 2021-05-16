@@ -5,17 +5,36 @@
  */
 package com.megahard.mofproject.view;
 
+import com.megahard.mofproject.control.DBContext;
+import com.megahard.mofproject.model.EstoqueItem;
+import com.megahard.mofproject.model.Ingrediente;
+import com.megahard.mofproject.utils.ListUtils;
+import com.megahard.mofproject.utils.ViewUtils;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author rafae
  */
 public class TelaProduto extends javax.swing.JFrame {
 
-    /**
-     * Creates new form TelaProduto
-     */
+    public List<Ingrediente> ingredientesSelecionados;
+    
     public TelaProduto() {
         initComponents();
+        
+        ingredientesSelecionados = new ArrayList<>();
+        
+        tabelaIngredientesExistentes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tabelaIngredientesSelecionados.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tabelaProdutosExistentes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
+        ListUtils.populateIngredientes();
+        ListUtils.populateProdutos();
+        atualizarTabelaIngredientesExistentes();
     }
 
     /**
@@ -29,16 +48,16 @@ public class TelaProduto extends javax.swing.JFrame {
 
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tabelaIngredientesExistentes = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        tabelaProdutosExistentes = new javax.swing.JTable();
         btAdd = new javax.swing.JButton();
         btCriar = new javax.swing.JButton();
         btRemover = new javax.swing.JButton();
         btApagar = new javax.swing.JButton();
         btSair = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable3 = new javax.swing.JTable();
+        tabelaIngredientesSelecionados = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         nomeProdutoText = new javax.swing.JTextField();
         btLimpar = new javax.swing.JButton();
@@ -48,12 +67,9 @@ public class TelaProduto extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Arial Black", 0, 24)); // NOI18N
         jLabel2.setText("MONTAGEM DE PRODUTOS");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tabelaIngredientesExistentes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null},
-                {null},
-                {null},
-                {null}
+
             },
             new String [] {
                 "INGREDIENTES EXISTENTES"
@@ -67,14 +83,11 @@ public class TelaProduto extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tabelaIngredientesExistentes);
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        tabelaProdutosExistentes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null},
-                {null},
-                {null},
-                {null}
+
             },
             new String [] {
                 "PRODUTOS CRIADOS"
@@ -88,15 +101,20 @@ public class TelaProduto extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane2.setViewportView(jTable2);
+        jScrollPane2.setViewportView(tabelaProdutosExistentes);
 
-        btAdd.setText("Adicionar");
+        btAdd.setText("Adicionar Ingrediente");
+        btAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btAddActionPerformed(evt);
+            }
+        });
 
         btCriar.setText("Criar");
 
-        btRemover.setText("Remover");
+        btRemover.setText("Remover Ingrediente");
 
-        btApagar.setText("Apagar");
+        btApagar.setText("Apagar Produto");
 
         btSair.setText("Sair");
         btSair.addActionListener(new java.awt.event.ActionListener() {
@@ -105,12 +123,9 @@ public class TelaProduto extends javax.swing.JFrame {
             }
         });
 
-        jTable3.setModel(new javax.swing.table.DefaultTableModel(
+        tabelaIngredientesSelecionados.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null},
-                {null},
-                {null},
-                {null}
+
             },
             new String [] {
                 "INGREDIENTES SELECIONADOS"
@@ -124,11 +139,16 @@ public class TelaProduto extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane3.setViewportView(jTable3);
+        jScrollPane3.setViewportView(tabelaIngredientesSelecionados);
 
         jLabel1.setText("Nome do produto:");
 
-        btLimpar.setText("Limpar");
+        btLimpar.setText("Limpar Selecionados");
+        btLimpar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btLimparActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -136,34 +156,25 @@ public class TelaProduto extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(31, 31, 31)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(btRemover, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btAdd, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+                    .addComponent(btAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 116, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btLimpar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btCriar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(116, 116, 116)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 374, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
-                                .addComponent(nomeProdutoText))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(213, 213, 213)
-                        .addComponent(jLabel1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(247, 247, 247)
-                        .addComponent(btLimpar)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 84, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(btApagar)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btSair, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(btCriar, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel1)
+                        .addGap(18, 18, 18)
+                        .addComponent(nomeProdutoText, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btRemover, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(84, 84, 84)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btSair, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE)
+                    .addComponent(btApagar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(30, 30, 30))
         );
         layout.setVerticalGroup(
@@ -174,28 +185,36 @@ public class TelaProduto extends javax.swing.JFrame {
                 .addGap(39, 39, 39)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(78, 78, 78)
+                                .addComponent(btSair, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btAdd)))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(btCriar))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(20, 49, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel1)
+                                    .addComponent(nomeProdutoText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btCriar))
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btApagar)
+                                    .addComponent(btRemover))
+                                .addGap(0, 0, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(nomeProdutoText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
                         .addComponent(btLimpar)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btAdd)
-                        .addGap(37, 37, 37)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btRemover)
-                            .addComponent(btApagar)
-                            .addComponent(btSair, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(37, Short.MAX_VALUE))))
+                        .addGap(27, 27, 27))))
         );
 
         pack();
@@ -206,9 +225,51 @@ public class TelaProduto extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_btSairActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    private void btLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btLimparActionPerformed
+        // TODO add your handling code here:
+        ViewUtils.cleanTable(tabelaIngredientesSelecionados);
+        ingredientesSelecionados = new ArrayList<>();
+    }//GEN-LAST:event_btLimparActionPerformed
+
+    private void btAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAddActionPerformed
+        // TODO add your handling code here:
+        String ingSelecionadoNome = ViewUtils.getRowFirstField(tabelaIngredientesExistentes);
+        if(ingSelecionadoNome.isEmpty()){
+            return;
+        }
+        
+        Ingrediente ingrediente = null;
+        for(Ingrediente ing : DBContext.getInstance().getDbIngrediente()){
+            if(ing.getNome().equals(ingSelecionadoNome)){
+                ingrediente = ing;
+                break;
+            }
+        }
+        
+        ingredientesSelecionados.add(ingrediente);
+        atualizarTabelaIngredientesSelecionados();
+    }//GEN-LAST:event_btAddActionPerformed
+
+    public void atualizarTabelaIngredientesExistentes(){
+        ViewUtils.cleanTable(tabelaIngredientesExistentes);
+        DefaultTableModel model = (DefaultTableModel) tabelaIngredientesExistentes.getModel();
+        
+        List<Ingrediente> ingredientes = DBContext.getInstance().getDbIngrediente();
+        for(Ingrediente ingrediente : ingredientes){
+            model.addRow(new Object[]{ingrediente.getNome()});
+        }
+    }
+    
+    public void atualizarTabelaIngredientesSelecionados(){
+        ViewUtils.cleanTable(tabelaIngredientesSelecionados);
+        DefaultTableModel model = (DefaultTableModel) tabelaIngredientesSelecionados.getModel();
+        
+        List<Ingrediente> ingredientes = ingredientesSelecionados;
+        for(Ingrediente ingrediente : ingredientes){
+            model.addRow(new Object[]{ingrediente.getNome()});
+        }
+    }
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -253,9 +314,9 @@ public class TelaProduto extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
-    private javax.swing.JTable jTable3;
     private javax.swing.JTextField nomeProdutoText;
+    private javax.swing.JTable tabelaIngredientesExistentes;
+    private javax.swing.JTable tabelaIngredientesSelecionados;
+    private javax.swing.JTable tabelaProdutosExistentes;
     // End of variables declaration//GEN-END:variables
 }
