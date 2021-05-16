@@ -10,7 +10,11 @@ import com.megahard.mofproject.model.EstoqueItem;
 import com.megahard.mofproject.model.Ingrediente;
 import com.megahard.mofproject.model.Produto;
 import com.megahard.mofproject.utils.ListUtils;
+import com.megahard.mofproject.utils.ViewUtils;
 import java.util.List;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import sun.applet.Main;
@@ -29,6 +33,18 @@ public class TelaCadastroPedido extends javax.swing.JFrame {
         ListUtils.populateIngredientes();
         ListUtils.populateProdutos();
         atualizarTabelaProdutos();
+        
+        tabelaProduto.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
+        tabelaProduto.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+        @Override
+        public void valueChanged(ListSelectionEvent event){
+            onRowSelected();
+        }
+        });
+        
+        
+        
     }
 
     /**
@@ -217,6 +233,10 @@ public class TelaCadastroPedido extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_campoComandaActionPerformed
 
+    public void onRowSelected(){
+        
+    }
+    
     private void atualizarTabelaProdutos(){
         DefaultTableModel model = (DefaultTableModel) tabelaProduto.getModel();
         int rowCount = model.getRowCount();
