@@ -192,6 +192,12 @@ public class TelaEstoque extends javax.swing.JFrame {
 
         jLabel7.setText("Quantidade");
 
+        nomeNovoItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nomeNovoItemActionPerformed(evt);
+            }
+        });
+
         quantNovoItem.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 quantNovoItemKeyTyped(evt);
@@ -345,6 +351,10 @@ public class TelaEstoque extends javax.swing.JFrame {
         int row = tabelaEstoque.getSelectedRow();
         String value = tabelaEstoque.getModel().getValueAt(row, column).toString();
     }//GEN-LAST:event_tabelaEstoqueFocusGained
+
+    private void nomeNovoItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nomeNovoItemActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_nomeNovoItemActionPerformed
 
     
     private void atualizarTabelaEstoque(){
