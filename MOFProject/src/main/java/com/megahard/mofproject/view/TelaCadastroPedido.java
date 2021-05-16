@@ -234,6 +234,24 @@ public class TelaCadastroPedido extends javax.swing.JFrame {
     }//GEN-LAST:event_campoComandaActionPerformed
 
     public void onRowSelected(){
+        String nomeProduto = ViewUtils.getRowFirstField(tabelaProduto);
+        if(nomeProduto.isEmpty()){
+            return;
+        }
+        
+        Produto produto = null;
+        for(Produto p : DBContext.getInstance().getDbProduto()){
+            if(p.getNomeProduto().equals(nomeProduto)){
+                produto = p;
+            }
+        }
+        
+        if(produto == null){
+            return;
+        }
+        
+        produtoNome.setText(produto.getNomeProduto());
+        
         
     }
     
