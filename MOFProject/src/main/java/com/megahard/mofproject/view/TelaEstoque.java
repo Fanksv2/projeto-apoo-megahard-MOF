@@ -38,6 +38,7 @@ public class TelaEstoque extends javax.swing.JFrame {
                 onRowSelected();
             }
     });
+        atualizarTabelaEstoque();
     }
  
 
@@ -86,8 +87,7 @@ public class TelaEstoque extends javax.swing.JFrame {
         tabelaEstoque.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         tabelaEstoque.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null}
+
             },
             new String [] {
                 "ITEM CADASTRADO NO ESTOQUE", "QTD"
@@ -394,6 +394,20 @@ public class TelaEstoque extends javax.swing.JFrame {
 
     private void btSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSaveActionPerformed
         // TODO add your handling code here:
+        String ingredienteNome = ViewUtils.getRowFirstField(tabelaEstoque);
+        if(ingredienteNome.isEmpty()){
+            return;
+        }
+        
+        EstoqueItem estoqueItem = findIngredienteInEstoque(ingredienteNome);
+        if(estoqueItem == null){
+            return;
+        }
+        
+        int qtd = Integer.parseInt(qntSelecionado.getText());
+        estoqueItem.setQntItemEstoque(qtd);
+        
+        atualizarTabelaEstoque();
     }//GEN-LAST:event_btSaveActionPerformed
     
     public void onRowSelected(){     
@@ -402,6 +416,16 @@ public class TelaEstoque extends javax.swing.JFrame {
             return;
         }
         
+        EstoqueItem estoqueItem = findIngredienteInEstoque(ingredienteNome);
+        if(estoqueItem == null){
+            return;
+        }
+        
+        nomeSelecionado.setText(estoqueItem.getIngrediente().getNome());
+        qntSelecionado.setText(String.valueOf(estoqueItem.getQntItemEstoque()));  
+    }
+    
+    public EstoqueItem findIngredienteInEstoque(String ingredienteNome){
         EstoqueItem estoqueItem = null;
         for(EstoqueItem ei : DBContext.getInstance().getDbEstoque()){
             Ingrediente ing = ei.getIngrediente();
@@ -410,12 +434,7 @@ public class TelaEstoque extends javax.swing.JFrame {
             }
         }
         
-        if(estoqueItem == null){
-            return;
-        }
-        
-        nomeSelecionado.setText(estoqueItem.getIngrediente().getNome());
-        qntSelecionado.setText(String.valueOf(estoqueItem.getQntItemEstoque()));  
+        return estoqueItem;
     }
     
     public void addCountToQtd(int number){
@@ -436,6 +455,7 @@ public class TelaEstoque extends javax.swing.JFrame {
         for (int i = rowCount - 1; i >= 0; i--) {
             model.removeRow(i);
         }
+        
         List<EstoqueItem> estItens = DBContext.getInstance().getDbEstoque();
         for(EstoqueItem estItem : estItens){
             model.addRow(new Object[]{estItem.getIngrediente().getNome(), estItem.getQntItemEstoque()});

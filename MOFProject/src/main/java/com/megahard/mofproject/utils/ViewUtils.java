@@ -4,6 +4,7 @@ import com.megahard.mofproject.control.DBContext;
 import com.megahard.mofproject.model.EstoqueItem;
 import com.megahard.mofproject.model.Ingrediente;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 public class ViewUtils {
     public static int getRow(JTable table){
@@ -30,5 +31,13 @@ public class ViewUtils {
         }
         
         return firstField;
+    }
+    public static void cleanTable(JTable table){
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        int rowCount = model.getRowCount();
+        //Remove rows one by one from the end of the table
+        for (int i = rowCount - 1; i >= 0; i--) {
+            model.removeRow(i);
+        }
     }
 }
