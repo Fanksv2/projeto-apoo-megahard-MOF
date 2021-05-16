@@ -18,12 +18,17 @@ public class ViewUtils {
     public static String getRowFirstField(JTable table){
         int column = 0;
         int row = getRow(table);
-        String ingredienteNome = table.getModel().getValueAt(row, column).toString();
         
-        if(ingredienteNome.isEmpty()){
+        if(row < 0){
             return "";
         }
         
-        return ingredienteNome;
+        String firstField = table.getModel().getValueAt(row, column).toString();
+        
+        if(firstField.isEmpty()){
+            return "";
+        }
+        
+        return firstField;
     }
 }
