@@ -10,7 +10,11 @@ import com.megahard.mofproject.model.EstoqueItem;
 import com.megahard.mofproject.model.Ingrediente;
 import com.megahard.mofproject.model.Produto;
 import com.megahard.mofproject.utils.ListUtils;
+import com.megahard.mofproject.utils.ViewUtils;
 import java.util.List;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import sun.applet.Main;
@@ -26,10 +30,15 @@ public class TelaEstoque extends javax.swing.JFrame {
      */
     public TelaEstoque() {
         initComponents();
-        ListUtils.populateIngredientes();
-        ListUtils.populateProdutos();
-        List<Produto> produtos = DBContext.getInstance().getDbProduto();
-
+        tabelaEstoque.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
+        tabelaEstoque.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+            @Override
+            public void valueChanged(ListSelectionEvent event) {
+                onRowSelected();
+            }
+    });
+        atualizarTabelaEstoque();
     }
  
 
@@ -78,8 +87,7 @@ public class TelaEstoque extends javax.swing.JFrame {
         tabelaEstoque.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         tabelaEstoque.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null}
+
             },
             new String [] {
                 "ITEM CADASTRADO NO ESTOQUE", "QTD"
@@ -99,6 +107,18 @@ public class TelaEstoque extends javax.swing.JFrame {
                 tabelaEstoqueFocusGained(evt);
             }
         });
+        tabelaEstoque.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tabelaEstoqueMouseClicked(evt);
+            }
+        });
+        tabelaEstoque.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+                tabelaEstoqueCaretPositionChanged(evt);
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+            }
+        });
         jScrollPane3.setViewportView(tabelaEstoque);
         if (tabelaEstoque.getColumnModel().getColumnCount() > 0) {
             tabelaEstoque.getColumnModel().getColumn(1).setMaxWidth(150);
@@ -113,6 +133,11 @@ public class TelaEstoque extends javax.swing.JFrame {
         });
 
         btMais.setText("+");
+        btMais.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btMaisActionPerformed(evt);
+            }
+        });
 
         btMenos.setText("-");
         btMenos.addActionListener(new java.awt.event.ActionListener() {
@@ -128,6 +153,13 @@ public class TelaEstoque extends javax.swing.JFrame {
         jLabel4.setText("Quantidade:");
 
         btSave.setText("Save");
+        btSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btSaveActionPerformed(evt);
+            }
+        });
+
+        nomeSelecionado.setEditable(false);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -290,6 +322,7 @@ public class TelaEstoque extends javax.swing.JFrame {
 
     private void btMenosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btMenosActionPerformed
         // TODO add your handling code here:
+        addCountToQtd(-1);
     }//GEN-LAST:event_btMenosActionPerformed
 
     private void qntSelecionadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qntSelecionadoActionPerformed
@@ -341,11 +374,79 @@ public class TelaEstoque extends javax.swing.JFrame {
 
     private void tabelaEstoqueFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tabelaEstoqueFocusGained
         // TODO add your handling code here:
-        int column = 0;
-        int row = tabelaEstoque.getSelectedRow();
-        String value = tabelaEstoque.getModel().getValueAt(row, column).toString();
+          
     }//GEN-LAST:event_tabelaEstoqueFocusGained
 
+    private void tabelaEstoqueCaretPositionChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_tabelaEstoqueCaretPositionChanged
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_tabelaEstoqueCaretPositionChanged
+
+    private void tabelaEstoqueMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabelaEstoqueMouseClicked
+        // TODO add your handling code here:
+       
+    }//GEN-LAST:event_tabelaEstoqueMouseClicked
+
+    private void btMaisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btMaisActionPerformed
+        // TODO add your handling code here:
+        addCountToQtd(1);
+    }//GEN-LAST:event_btMaisActionPerformed
+
+    private void btSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSaveActionPerformed
+        // TODO add your handling code here:
+        String ingredienteNome = ViewUtils.getRowFirstField(tabelaEstoque);
+        if(ingredienteNome.isEmpty()){
+            return;
+        }
+        
+        EstoqueItem estoqueItem = findIngredienteInEstoque(ingredienteNome);
+        if(estoqueItem == null){
+            return;
+        }
+        
+        int qtd = Integer.parseInt(qntSelecionado.getText());
+        estoqueItem.setQntItemEstoque(qtd);
+        
+        atualizarTabelaEstoque();
+    }//GEN-LAST:event_btSaveActionPerformed
+    
+    public void onRowSelected(){     
+        String ingredienteNome = ViewUtils.getRowFirstField(tabelaEstoque);
+        if(ingredienteNome.isEmpty()){
+            return;
+        }
+        
+        EstoqueItem estoqueItem = findIngredienteInEstoque(ingredienteNome);
+        if(estoqueItem == null){
+            return;
+        }
+        
+        nomeSelecionado.setText(estoqueItem.getIngrediente().getNome());
+        qntSelecionado.setText(String.valueOf(estoqueItem.getQntItemEstoque()));  
+    }
+    
+    public EstoqueItem findIngredienteInEstoque(String ingredienteNome){
+        EstoqueItem estoqueItem = null;
+        for(EstoqueItem ei : DBContext.getInstance().getDbEstoque()){
+            Ingrediente ing = ei.getIngrediente();
+            if(ing.getNome().equals(ingredienteNome)){
+                estoqueItem = ei;
+            }
+        }
+        
+        return estoqueItem;
+    }
+    
+    public void addCountToQtd(int number){
+        String sNumber = qntSelecionado.getText();
+        if(sNumber.isEmpty())
+            return;
+        
+        int qnt = Integer.parseInt(sNumber);
+        qnt += number;
+        
+        qntSelecionado.setText(String.valueOf(qnt));
+    }
     
     private void atualizarTabelaEstoque(){
         DefaultTableModel model = (DefaultTableModel) tabelaEstoque.getModel();
@@ -354,8 +455,9 @@ public class TelaEstoque extends javax.swing.JFrame {
         for (int i = rowCount - 1; i >= 0; i--) {
             model.removeRow(i);
         }
+        
         List<EstoqueItem> estItens = DBContext.getInstance().getDbEstoque();
-        for(EstoqueItem estItem : estItens){   
+        for(EstoqueItem estItem : estItens){
             model.addRow(new Object[]{estItem.getIngrediente().getNome(), estItem.getQntItemEstoque()});
         }
     }
