@@ -308,7 +308,6 @@ public class TelaPagamento extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSairActionPerformed
-        // TODO add your handling code here:
         dispose();
         
     }//GEN-LAST:event_btSairActionPerformed
