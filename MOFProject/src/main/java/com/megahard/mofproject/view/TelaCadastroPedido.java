@@ -6,12 +6,15 @@
 package com.megahard.mofproject.view;
 
 import com.megahard.mofproject.control.DBContext;
+import com.megahard.mofproject.model.Comanda;
 import com.megahard.mofproject.model.EstoqueItem;
 import com.megahard.mofproject.model.Ingrediente;
+import com.megahard.mofproject.model.Pedido;
 import com.megahard.mofproject.model.Produto;
 import com.megahard.mofproject.utils.ListUtils;
 import com.megahard.mofproject.utils.ViewUtils;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -219,16 +222,65 @@ public class TelaCadastroPedido extends javax.swing.JFrame {
         String numeroComanda = campoComanda.getText();
         String nomeProduto = produtoNome.getText();
         String quantidadeProduto = qtdProduto.getText();
+        int comandaExiste = 0;
         
         if(nomeProduto.isEmpty() || quantidadeProduto.isEmpty() || numeroComanda.isEmpty()){
             return;
         }
         
         int numeroProdutos = Integer.parseInt(quantidadeProduto);
+        int codigoComanda = Integer.parseInt(numeroComanda);
+                
+        /*Problemas: preciso fazer o programa verificar se existe uma comanda com o codigo passado, 
+        e caso exista, pegar essa comanda e usar ela mesma no cadastro do pedido, mas não sei como
+        pegar essa comanda específica. O for abaixo está uma bagunça que tentei criar para separar nos if's
+        abaixo, que (teoricamente) realiza o cadastro
+        */
+        Comanda comandaExistente = new Comanda( );
+        for(Comanda c : DBContext.getInstance().getDbComanda()){
+            if(codigoComanda == c.getCodigo()){
+            comandaExiste = 1;
+            comandaExistente = c;
+            }
+        }
         
+        if(comandaExiste==1){
+                Produto produto = new Produto();
+                produto.setNomeProduto(nomeProduto);
+                
+                Pedido pedido = new Pedido();
+                pedido.setProduto(produto);
+                pedido.setQuantidade(numeroProdutos);
+                
+                comandaExistente.getPedidos().add(pedido);
+                
+                DBContext.getInstance().getDbComanda().add(comandaExistente);
+                       
+                JOptionPane.showMessageDialog(this, "Cadastro de pedido com sucesso em uma comanda já existente!");
+            }
+        
+        if(comandaExiste==0){ //Esse aqui é para caso seja uma comanda nova, creio que esse funcione
+                Comanda comanda = new Comanda();
+                comanda.setCodigo(codigoComanda);
+
+                Produto produto = new Produto();
+                produto.setNomeProduto(nomeProduto);
+                
+                Pedido pedido = new Pedido();
+                pedido.setProduto(produto);
+                pedido.setQuantidade(numeroProdutos);
+                
+                comanda.getPedidos().add(pedido);
+                
+                
+                DBContext.getInstance().getDbComanda().add(comanda);
+                
+                JOptionPane.showMessageDialog(this, "Cadastro de pedido com sucesso em uma nova comanda!");
+            }
         
     }//GEN-LAST:event_btCadastrarActionPerformed
 
+    
     private void campoComandaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_campoComandaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_campoComandaActionPerformed
