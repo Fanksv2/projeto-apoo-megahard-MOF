@@ -13,10 +13,15 @@ import java.util.List;
  * @author rafae
  */
 public class Pagamento {
+
     private List<Pedido> pedidos;
     private List<Comanda> comandas = new ArrayList <>();
     private NotaFiscal notaFiscal;
+    private boolean formaPagamento;
 
+    public Pagamento(){
+        notaFiscal = new NotaFiscal();
+    }
     public List<Pedido> getPedidos() {
         return pedidos;
     }
@@ -40,5 +45,15 @@ public class Pagamento {
     public void setNotaFiscal(NotaFiscal notaFiscal) {
         this.notaFiscal = notaFiscal;
     }
+
+    public boolean isFormaPagamento() {
+        return formaPagamento;
+    }
+
+    public void setFormaPagamento(boolean formaPagamento) {
+        this.formaPagamento = formaPagamento;
+    }
+
     
+
 }

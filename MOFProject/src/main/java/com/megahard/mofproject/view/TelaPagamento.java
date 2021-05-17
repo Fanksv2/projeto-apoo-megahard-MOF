@@ -5,6 +5,21 @@
  */
 package com.megahard.mofproject.view;
 
+import com.megahard.mofproject.control.DBContext;
+import com.megahard.mofproject.model.Comanda;
+import com.megahard.mofproject.model.EstoqueItem;
+import com.megahard.mofproject.model.Pagamento;
+import java.text.ParseException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ButtonGroup;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.text.MaskFormatter;
+
 /**
  *
  * @author rafae
@@ -14,8 +29,14 @@ public class TelaPagamento extends javax.swing.JFrame {
     /**
      * Creates new form TelaPagamento
      */
+    Pagamento pagamento;
+    ButtonGroup group;
     public TelaPagamento() {
-        initComponents();
+            initComponents();
+        group = new ButtonGroup();
+        group.add(rBtDinheiro);
+        group.add(rBtCartao);
+        pagamento = new Pagamento();
     }
 
     /**
@@ -29,17 +50,17 @@ public class TelaPagamento extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        comandaText = new javax.swing.JTextField();
         btOk = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        comandaTabela = new javax.swing.JTable();
         btSair = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        itemComandaTabela = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
+        rBtDinheiro = new javax.swing.JRadioButton();
+        rBtCartao = new javax.swing.JRadioButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -51,7 +72,7 @@ public class TelaPagamento extends javax.swing.JFrame {
         btCalcular = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        jCheckBoxCpf = new javax.swing.JCheckBox();
         jLabel7 = new javax.swing.JLabel();
         cpfText = new javax.swing.JTextField();
         btFinalizar = new javax.swing.JButton();
@@ -70,7 +91,7 @@ public class TelaPagamento extends javax.swing.JFrame {
             }
         });
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        comandaTabela.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null},
                 {null},
@@ -89,7 +110,7 @@ public class TelaPagamento extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(comandaTabela);
 
         btSair.setText("Sair");
         btSair.addActionListener(new java.awt.event.ActionListener() {
@@ -98,7 +119,7 @@ public class TelaPagamento extends javax.swing.JFrame {
             }
         });
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        itemComandaTabela.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null},
                 {null, null},
@@ -117,18 +138,28 @@ public class TelaPagamento extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane2.setViewportView(jTable2);
-        if (jTable2.getColumnModel().getColumnCount() > 0) {
-            jTable2.getColumnModel().getColumn(1).setMaxWidth(250);
+        jScrollPane2.setViewportView(itemComandaTabela);
+        if (itemComandaTabela.getColumnModel().getColumnCount() > 0) {
+            itemComandaTabela.getColumnModel().getColumn(1).setMaxWidth(250);
         }
 
         jPanel1.setBorder(new javax.swing.border.MatteBorder(null));
 
         jLabel3.setText("FORMA DE PAGAMENTO");
 
-        jRadioButton1.setText("Dinheiro");
+        rBtDinheiro.setText("Dinheiro");
+        rBtDinheiro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rBtDinheiroActionPerformed(evt);
+            }
+        });
 
-        jRadioButton2.setText("Cartão");
+        rBtCartao.setText("Cartão");
+        rBtCartao.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rBtCartaoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -136,9 +167,9 @@ public class TelaPagamento extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(75, 75, 75)
-                .addComponent(jRadioButton1)
+                .addComponent(rBtDinheiro)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jRadioButton2)
+                .addComponent(rBtCartao)
                 .addGap(98, 98, 98))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -150,10 +181,10 @@ public class TelaPagamento extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel3)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jRadioButton1)
-                    .addComponent(jRadioButton2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(rBtCartao)
+                    .addComponent(rBtDinheiro, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE))
                 .addContainerGap(27, Short.MAX_VALUE))
         );
 
@@ -161,11 +192,17 @@ public class TelaPagamento extends javax.swing.JFrame {
 
         jLabel4.setText("PAGAMENTO");
 
-        jLabel5.setText("Valor à pagar:");
+        jLabel5.setText("Valor total:");
 
         jLabel8.setText("Valor pago:");
 
         jLabel9.setText("Troco:");
+
+        trocoText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                trocoTextActionPerformed(evt);
+            }
+        });
 
         btCalcular.setText("Calcular");
         btCalcular.addActionListener(new java.awt.event.ActionListener() {
@@ -230,7 +267,19 @@ public class TelaPagamento extends javax.swing.JFrame {
 
         jLabel6.setText("NOTA FISCAL");
 
+        jCheckBoxCpf.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxCpfActionPerformed(evt);
+            }
+        });
+
         jLabel7.setText("CPF:");
+
+        cpfText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cpfTextActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -243,7 +292,7 @@ public class TelaPagamento extends javax.swing.JFrame {
                         .addComponent(jLabel6))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(33, 33, 33)
-                        .addComponent(jCheckBox1)
+                        .addComponent(jCheckBoxCpf)
                         .addGap(18, 18, 18)
                         .addComponent(jLabel7)
                         .addGap(18, 18, 18)
@@ -260,12 +309,17 @@ public class TelaPagamento extends javax.swing.JFrame {
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jCheckBox1, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jCheckBoxCpf, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addGap(33, 33, 33))
         );
 
         btFinalizar.setText("Finalizar");
+        btFinalizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btFinalizarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -277,7 +331,7 @@ public class TelaPagamento extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addGap(18, 18, 18)
-                        .addComponent(jTextField1)
+                        .addComponent(comandaText)
                         .addGap(18, 18, 18)
                         .addComponent(btOk))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
@@ -307,7 +361,7 @@ public class TelaPagamento extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(comandaText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btOk))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -317,15 +371,14 @@ public class TelaPagamento extends javax.swing.JFrame {
                         .addGap(35, 35, 35)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 364, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(btFinalizar, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btSair, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(btSair, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(3, 3, 3)
                         .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btFinalizar, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(0, 26, Short.MAX_VALUE))
         );
 
@@ -338,13 +391,75 @@ public class TelaPagamento extends javax.swing.JFrame {
     }//GEN-LAST:event_btSairActionPerformed
 
     private void btOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btOkActionPerformed
-        // TODO add your handling code here:
+        atualizarTabelaComanda();
     }//GEN-LAST:event_btOkActionPerformed
 
+    private void atualizarTabelaComanda(){
+        DefaultTableModel model = (DefaultTableModel) comandaTabela.getModel();
+        int rowCount = model.getRowCount();
+        //Remove rows one by one from the end of the table
+        for (int i = rowCount - 1; i >= 0; i--) {
+            model.removeRow(i);
+        }
+        
+        List<Comanda> comanda = DBContext.getInstance().getDbComanda();
+        for(Comanda com : comanda){
+            model.addRow(new Object[]{com.getCodigo()});
+        }
+    }
+    
     private void btCalcularActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCalcularActionPerformed
-        // TODO add your handling code here:
+        float troco = (Float.parseFloat(valorText.getText())) - (Float.parseFloat(totalText.getText())) ;
+        trocoText.setText(String.valueOf(troco));
+        
     }//GEN-LAST:event_btCalcularActionPerformed
+    
+    private void rBtDinheiroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rBtDinheiroActionPerformed
+        rBtDinheiro.setSelected(true);
+        pagamento.setFormaPagamento(true);
+        
+    }//GEN-LAST:event_rBtDinheiroActionPerformed
 
+    private void rBtCartaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rBtCartaoActionPerformed
+        rBtCartao.setSelected(true);
+        pagamento.setFormaPagamento(false);
+        
+    }//GEN-LAST:event_rBtCartaoActionPerformed
+
+    private void trocoTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trocoTextActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_trocoTextActionPerformed
+
+    private void jCheckBoxCpfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxCpfActionPerformed
+      
+    }//GEN-LAST:event_jCheckBoxCpfActionPerformed
+
+    private void btFinalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btFinalizarActionPerformed
+         if(jCheckBoxCpf.isSelected()){
+             pagamento.getNotaFiscal().setCpf(cpfText.getText());
+         }
+         pagamento.getNotaFiscal().setValor(Float.parseFloat(totalText.getText()));
+         pagamento.getNotaFiscal().setValorPago(Float.parseFloat(valorText.getText()));
+                
+         JOptionPane.showMessageDialog(null, "\nValor pago: "+pagamento.getNotaFiscal().getValor()+"\n\nCPF: "+pagamento.getNotaFiscal().getCpf(),"Nota Fiscal", JOptionPane.INFORMATION_MESSAGE);
+         DBContext.getInstance().getDbNotaFiscal().add(pagamento.getNotaFiscal());
+         limpa();
+         
+    }//GEN-LAST:event_btFinalizarActionPerformed
+
+    private void cpfTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cpfTextActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cpfTextActionPerformed
+
+    private void limpa(){   
+        totalText.setText("");
+        valorText.setText("");
+        trocoText.setText("");
+        cpfText.setText("");
+        jCheckBoxCpf.setSelected(false);
+        group.clearSelection();
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -385,8 +500,11 @@ public class TelaPagamento extends javax.swing.JFrame {
     private javax.swing.JButton btFinalizar;
     private javax.swing.JButton btOk;
     private javax.swing.JButton btSair;
+    private javax.swing.JTable comandaTabela;
+    private javax.swing.JTextField comandaText;
     private javax.swing.JTextField cpfText;
-    private javax.swing.JCheckBox jCheckBox1;
+    private javax.swing.JTable itemComandaTabela;
+    private javax.swing.JCheckBox jCheckBoxCpf;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -399,13 +517,10 @@ public class TelaPagamento extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JRadioButton rBtCartao;
+    private javax.swing.JRadioButton rBtDinheiro;
     private javax.swing.JTextField totalText;
     private javax.swing.JTextField trocoText;
     private javax.swing.JTextField valorText;

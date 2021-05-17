@@ -12,6 +12,7 @@ package com.megahard.mofproject.model;
 public class NotaFiscal {
     private String cpf;
     private float valor;
+    private float valorPago;
 
     public String getCpf() {
         return cpf;
@@ -27,6 +28,14 @@ public class NotaFiscal {
 
     public void setValor(float valor) {
         this.valor = valor;
+    }
+
+    public float getValorPago() {
+        return valorPago;
+    }
+
+    public void setValorPago(float valorPago) {
+        this.valorPago = valorPago;
     }
     
 }
