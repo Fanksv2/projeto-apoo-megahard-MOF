@@ -8,12 +8,23 @@ package com.megahard.mofproject.view;
 import com.megahard.mofproject.control.DBContext;
 import com.megahard.mofproject.model.EstoqueItem;
 import com.megahard.mofproject.model.Ingrediente;
+import com.megahard.mofproject.model.Produto;
+import com.megahard.mofproject.model.QuantidadeIngrediente;
 import com.megahard.mofproject.utils.ListUtils;
 import com.megahard.mofproject.utils.ViewUtils;
+import java.text.Format;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFormattedTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.MaskFormatter;
+import javax.swing.text.NumberFormatter;
 
 /**
  *
@@ -23,7 +34,7 @@ public class TelaProduto extends javax.swing.JFrame {
 
     public List<Ingrediente> ingredientesSelecionados;
     
-    public TelaProduto() {
+    public TelaProduto() throws ParseException {
         initComponents();
         
         ingredientesSelecionados = new ArrayList<>();
@@ -35,6 +46,7 @@ public class TelaProduto extends javax.swing.JFrame {
         ListUtils.populateIngredientes();
         ListUtils.populateProdutos();
         atualizarTabelaIngredientesExistentes();
+        atualizarTabelaProdutosExistentes();
     }
 
     /**
@@ -61,6 +73,8 @@ public class TelaProduto extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         nomeProdutoText = new javax.swing.JTextField();
         btLimpar = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        precoProdutoText = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -90,11 +104,11 @@ public class TelaProduto extends javax.swing.JFrame {
 
             },
             new String [] {
-                "PRODUTOS CRIADOS"
+                "PRODUTOS CRIADOS", "PREÇO"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false
+                false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -102,6 +116,9 @@ public class TelaProduto extends javax.swing.JFrame {
             }
         });
         jScrollPane2.setViewportView(tabelaProdutosExistentes);
+        if (tabelaProdutosExistentes.getColumnModel().getColumnCount() > 0) {
+            tabelaProdutosExistentes.getColumnModel().getColumn(1).setMaxWidth(120);
+        }
 
         btAdd.setText("Adicionar Ingrediente");
         btAdd.addActionListener(new java.awt.event.ActionListener() {
@@ -111,8 +128,18 @@ public class TelaProduto extends javax.swing.JFrame {
         });
 
         btCriar.setText("Criar");
+        btCriar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btCriarActionPerformed(evt);
+            }
+        });
 
         btRemover.setText("Remover Ingrediente");
+        btRemover.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btRemoverActionPerformed(evt);
+            }
+        });
 
         btApagar.setText("Apagar Produto");
 
@@ -150,6 +177,24 @@ public class TelaProduto extends javax.swing.JFrame {
             }
         });
 
+        jLabel3.setText("Preço:");
+
+        precoProdutoText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                precoProdutoTextActionPerformed(evt);
+            }
+        });
+        precoProdutoText.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                precoProdutoTextPropertyChange(evt);
+            }
+        });
+        precoProdutoText.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                precoProdutoTextKeyTyped(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -165,11 +210,15 @@ public class TelaProduto extends javax.swing.JFrame {
                     .addComponent(btCriar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btRemover, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel3))
                         .addGap(18, 18, 18)
-                        .addComponent(nomeProdutoText, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(btRemover, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(precoProdutoText, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(nomeProdutoText, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(84, 84, 84)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btSair, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -185,7 +234,9 @@ public class TelaProduto extends javax.swing.JFrame {
                 .addGap(39, 39, 39)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(78, 78, 78)
@@ -193,28 +244,26 @@ public class TelaProduto extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(btAdd)))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(20, 49, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel1)
-                                    .addComponent(nomeProdutoText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btCriar))
-                            .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(btApagar)
-                                    .addComponent(btRemover))
-                                .addGap(0, 0, Short.MAX_VALUE)))
+                            .addComponent(btApagar)
+                            .addComponent(btRemover))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(nomeProdutoText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btLimpar)
-                        .addGap(27, 27, 27))))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(precoProdutoText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btCriar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btLimpar)))
+                .addContainerGap())
         );
 
         pack();
@@ -250,6 +299,94 @@ public class TelaProduto extends javax.swing.JFrame {
         atualizarTabelaIngredientesSelecionados();
     }//GEN-LAST:event_btAddActionPerformed
 
+    private void btRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRemoverActionPerformed
+        String ingredienteNome = ViewUtils.getRowFirstField(tabelaIngredientesSelecionados);
+        if(ingredienteNome.isEmpty()){
+            return;
+        }
+        
+        Ingrediente ingrediente = null;
+        for(Ingrediente ing : ingredientesSelecionados){
+            if(ing.getNome().equals(ingredienteNome)){
+                ingrediente = ing;
+                break;
+            }
+        }
+        if(ingrediente == null)
+            return;
+        
+        ingredientesSelecionados.remove(ingrediente);
+        atualizarTabelaIngredientesSelecionados();
+    }//GEN-LAST:event_btRemoverActionPerformed
+
+    private void btCriarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCriarActionPerformed
+        String produtoNome = nomeProdutoText.getText();
+        if(produtoNome.isEmpty()){
+            return;
+        }
+        if(precoProdutoText.getText().isEmpty()){
+            return;
+        }
+        if(ingredientesSelecionados.size() == 0){
+            return;
+        }
+        
+        Produto prod = null;
+        for(Produto p : DBContext.getInstance().getDbProduto()){
+            if(p.getNomeProduto().equals(produtoNome)){
+                prod = p;
+            }
+        }
+        
+        if(prod != null){
+            return;
+        }
+        
+        float preco = Float.parseFloat(precoProdutoText.getText());
+        
+        Produto produto = new Produto();
+        produto.setNomeProduto(produtoNome);
+        produto.setPreco(preco);
+        
+        for(Ingrediente i : ListUtils.removeDuplicates(ingredientesSelecionados)){
+            int qtd = 0;
+            for(Ingrediente j : ingredientesSelecionados){
+                if(i.getNome().equals(j.getNome())){
+                    qtd++;
+                }
+            }
+            QuantidadeIngrediente qtdIngrediente = new QuantidadeIngrediente();
+            qtdIngrediente.setIngrediente(i);
+            qtdIngrediente.setQuantidadeNecessaria(qtd);
+            
+            produto.getQuantidadeIngredientes().add(qtdIngrediente);
+        }
+        DBContext.getInstance().getDbProduto().add(produto);
+        atualizarTabelaProdutosExistentes();
+        System.out.println(produto);
+    }//GEN-LAST:event_btCriarActionPerformed
+
+    
+    private void precoProdutoTextKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_precoProdutoTextKeyTyped
+        char c = evt.getKeyChar();
+        if(c == '.'){
+            return;
+        }
+        if(!Character.isDigit(c)) {
+            evt.consume();
+        }
+
+    }//GEN-LAST:event_precoProdutoTextKeyTyped
+
+    private void precoProdutoTextPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_precoProdutoTextPropertyChange
+
+    }//GEN-LAST:event_precoProdutoTextPropertyChange
+
+    private void precoProdutoTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_precoProdutoTextActionPerformed
+        if(!precoProdutoText.getText().isEmpty())
+            precoProdutoText.setText(NumberFormat.getCurrencyInstance().format(Double.parseDouble(precoProdutoText.getText())));
+    }//GEN-LAST:event_precoProdutoTextActionPerformed
+
     public void atualizarTabelaIngredientesExistentes(){
         ViewUtils.cleanTable(tabelaIngredientesExistentes);
         DefaultTableModel model = (DefaultTableModel) tabelaIngredientesExistentes.getModel();
@@ -257,6 +394,16 @@ public class TelaProduto extends javax.swing.JFrame {
         List<Ingrediente> ingredientes = DBContext.getInstance().getDbIngrediente();
         for(Ingrediente ingrediente : ingredientes){
             model.addRow(new Object[]{ingrediente.getNome()});
+        }
+    }
+    
+    public void atualizarTabelaProdutosExistentes(){
+        ViewUtils.cleanTable(tabelaProdutosExistentes);
+        DefaultTableModel model = (DefaultTableModel) tabelaProdutosExistentes.getModel();
+        
+        List<Produto> produtos = DBContext.getInstance().getDbProduto();
+        for(Produto produto : produtos){
+            model.addRow(new Object[]{produto.getNomeProduto(), produto.getPreco()});
         }
     }
     
@@ -297,7 +444,11 @@ public class TelaProduto extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new TelaProduto().setVisible(true);
+                try {
+                    new TelaProduto().setVisible(true);
+                } catch (ParseException ex) {
+                    Logger.getLogger(TelaProduto.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
@@ -311,10 +462,12 @@ public class TelaProduto extends javax.swing.JFrame {
     private javax.swing.JButton btSair;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTextField nomeProdutoText;
+    private javax.swing.JTextField precoProdutoText;
     private javax.swing.JTable tabelaIngredientesExistentes;
     private javax.swing.JTable tabelaIngredientesSelecionados;
     private javax.swing.JTable tabelaProdutosExistentes;

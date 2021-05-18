@@ -5,6 +5,7 @@ import com.megahard.mofproject.control.DBContext;
 import com.megahard.mofproject.model.Ingrediente;
 import com.megahard.mofproject.model.Produto;
 import com.megahard.mofproject.model.QuantidadeIngrediente;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,5 +38,26 @@ public class ListUtils {
             produto.getQuantidadeIngredientes().add(qtdIngrediente);
         }
         DBContext.getInstance().getDbProduto().add(produto);
+    }
+    
+    public static <T> List<T> removeDuplicates(List<T> list)
+    {
+  
+        // Create a new ArrayList
+        List<T> newList = new ArrayList<T>();
+  
+        // Traverse through the first list
+        for (T element : list) {
+  
+            // If this element is not present in newList
+            // then add it
+            if (!newList.contains(element)) {
+  
+                newList.add(element);
+            }
+        }
+  
+        // return the new list
+        return newList;
     }
 }
