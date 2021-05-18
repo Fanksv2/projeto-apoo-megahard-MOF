@@ -5,6 +5,23 @@
  */
 package com.megahard.mofproject.view;
 
+import com.megahard.mofproject.control.DBContext;
+import com.megahard.mofproject.model.Comanda;
+import com.megahard.mofproject.model.EstoqueItem;
+import com.megahard.mofproject.model.Ingrediente;
+import com.megahard.mofproject.model.Pedido;
+import com.megahard.mofproject.model.Produto;
+import com.megahard.mofproject.utils.ListUtils;
+import com.megahard.mofproject.utils.ViewUtils;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import sun.applet.Main;
+
 /**
  *
  * @author rafae
@@ -16,6 +33,7 @@ public class TelaPedido extends javax.swing.JFrame {
      */
     public TelaPedido() {
         initComponents();
+        ListUtils.populateComandas();
     }
 
     /**
@@ -76,7 +94,18 @@ public class TelaPedido extends javax.swing.JFrame {
 
         jLabel2.setText("Comanda:");
 
+        comandaText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comandaTextActionPerformed(evt);
+            }
+        });
+
         btConfirma.setText("OK");
+        btConfirma.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btConfirmaActionPerformed(evt);
+            }
+        });
 
         btSair.setText("Sair");
         btSair.addActionListener(new java.awt.event.ActionListener() {
@@ -217,6 +246,34 @@ public class TelaPedido extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_btAlterarActionPerformed
 
+    private void comandaTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comandaTextActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_comandaTextActionPerformed
+
+    private void btConfirmaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btConfirmaActionPerformed
+        // TODO add your handling code here:
+        String numeroComanda = comandaText.getText();
+        
+        int codigoComanda = Integer.parseInt(numeroComanda);
+        
+        
+        
+    }//GEN-LAST:event_btConfirmaActionPerformed
+
+    private void atualizarTabelaComandas(){
+        DefaultTableModel model = (DefaultTableModel) tabelaProduto.getModel();
+        int rowCount = model.getRowCount();
+        //Remove rows one by one from the end of the table
+        for (int i = rowCount - 1; i >= 0; i--) {
+            model.removeRow(i);
+        }
+        
+        List<Comanda> comandas = DBContext.getInstance().getDbComanda();
+        for(Comanda comanda : comandas){   
+            model.addRow(new Object[]{comanda.getPedidos()});
+        }
+    }
+    
     /**
      * @param args the command line arguments
      */

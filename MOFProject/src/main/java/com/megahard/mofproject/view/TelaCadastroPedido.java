@@ -35,6 +35,7 @@ public class TelaCadastroPedido extends javax.swing.JFrame {
         initComponents();
         ListUtils.populateIngredientes();
         ListUtils.populateProdutos();
+        ListUtils.populateComandas();
         atualizarTabelaProdutos();
         
         tabelaProduto.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

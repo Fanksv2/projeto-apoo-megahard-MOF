@@ -125,11 +125,17 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="comandaText">
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="comandaTextActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btConfirma">
       <Properties>
         <Property name="text" type="java.lang.String" value="OK"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btConfirmaActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btSair">
       <Properties>
