@@ -5,9 +5,9 @@ import com.megahard.mofproject.control.DBContext;
 import com.megahard.mofproject.model.Ingrediente;
 import com.megahard.mofproject.model.Produto;
 import com.megahard.mofproject.model.QuantidadeIngrediente;
+import java.util.ArrayList;
 import com.megahard.mofproject.model.Comanda;
-import com.megahard.mofproject.model.Pedido;
-import java.util.Arrays;
+import com.megahard.mofproject.model.Pedido;import java.util.Arrays;
 import java.util.List;
 
 public class ListUtils {
@@ -40,8 +40,26 @@ public class ListUtils {
         }
         DBContext.getInstance().getDbProduto().add(produto);
     }
-    
-    public static void populateComandas(){
+public static <T> List<T> removeDuplicates(List<T> list)
+    {
+  
+        // Create a new ArrayList
+        List<T> newList = new ArrayList<T>();
+  
+        // Traverse through the first list
+        for (T element : list) {
+  
+            // If this element is not present in newList
+            // then add it
+            if (!newList.contains(element)) {
+  
+                newList.add(element);
+            }
+        }
+  
+        // return the new list
+        return newList;
+    }    public static void populateComandas(){
         List<Integer> qntPedido = Arrays.asList(1, 2, 3); //Não sei para que usar isso sinceramente
         Comanda comanda = new Comanda();
         comanda.setCodigo(42); //O código da comanda pré-criada é 42
@@ -68,5 +86,4 @@ public class ListUtils {
         comanda.getPedidos().add(pedido);
                 
         DBContext.getInstance().getDbComanda().add(comanda);
-    }
-}
+    }}

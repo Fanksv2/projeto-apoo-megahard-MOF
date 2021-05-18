@@ -224,6 +224,7 @@ public class TelaCadastroPedido extends javax.swing.JFrame {
         String nomeProduto = produtoNome.getText();
         String quantidadeProduto = qtdProduto.getText();
         int comandaExiste = 0;
+        Comanda comanda = null;
         
         if(nomeProduto.isEmpty() || quantidadeProduto.isEmpty() || numeroComanda.isEmpty()){
             return;
@@ -237,48 +238,45 @@ public class TelaCadastroPedido extends javax.swing.JFrame {
         pegar essa comanda específica. O for abaixo está uma bagunça que tentei criar para separar nos if's
         abaixo, que (teoricamente) realiza o cadastro
         */
-        Comanda comandaExistente = new Comanda( );
+        Comanda comandaExistente = null;
         for(Comanda c : DBContext.getInstance().getDbComanda()){
             if(codigoComanda == c.getCodigo()){
-            comandaExiste = 1;
-            comandaExistente = c;
+                comandaExistente = c;
             }
         }
         
-        if(comandaExiste==1){
-                Produto produto = new Produto();
-                produto.setNomeProduto(nomeProduto);
-                
-                Pedido pedido = new Pedido();
-                pedido.setProduto(produto);
-                pedido.setQuantidade(numeroProdutos);
-                
-                comandaExistente.getPedidos().add(pedido);
-                
-                DBContext.getInstance().getDbComanda().add(comandaExistente);
+        if(comandaExistente != null){
+            comanda = comandaExistente;
                        
-                JOptionPane.showMessageDialog(this, "Cadastro de pedido com sucesso em uma comanda já existente!");
-            }
+            JOptionPane.showMessageDialog(this, "Cadastro de pedido com sucesso em uma comanda já existente!");
+        }
         
-        if(comandaExiste==0){ //Esse aqui é para caso seja uma comanda nova, creio que esse funcione
-                Comanda comanda = new Comanda();
-                comanda.setCodigo(codigoComanda);
+        else{ //Esse aqui é para caso seja uma comanda nova, creio que esse funcione
+            comanda = new Comanda();
+            comanda.setCodigo(codigoComanda);
+            JOptionPane.showMessageDialog(this, "Cadastro de pedido com sucesso em uma nova comanda!");
+        }
+        
+        Produto produto = null;
+        for(Produto p : DBContext.getInstance().getDbProduto()){
+            if(p.getNomeProduto().equals(nomeProduto)){
+            produto = p;
+            }
+        }
 
-                Produto produto = new Produto();
-                produto.setNomeProduto(nomeProduto);
-                
-                Pedido pedido = new Pedido();
-                pedido.setProduto(produto);
-                pedido.setQuantidade(numeroProdutos);
-                
-                comanda.getPedidos().add(pedido);
-                
-                
-                DBContext.getInstance().getDbComanda().add(comanda);
-                
-                JOptionPane.showMessageDialog(this, "Cadastro de pedido com sucesso em uma nova comanda!");
-            }
-        
+        if(produto == null){
+            return;
+        }
+
+        Pedido pedido = new Pedido();
+        pedido.setProduto(produto);
+        pedido.setQuantidade(numeroProdutos);
+
+        comanda.getPedidos().add(pedido);
+
+
+        DBContext.getInstance().getDbComanda().add(comanda);
+
     }//GEN-LAST:event_btCadastrarActionPerformed
 
     

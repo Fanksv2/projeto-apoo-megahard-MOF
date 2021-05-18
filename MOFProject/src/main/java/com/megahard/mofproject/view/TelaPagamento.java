@@ -14,6 +14,7 @@ import com.megahard.mofproject.model.Produto;
 import com.megahard.mofproject.utils.ListUtils;
 import com.megahard.mofproject.utils.ViewUtils;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,12 +36,16 @@ public class TelaPagamento extends javax.swing.JFrame {
      */
     Pagamento pagamento;
     ButtonGroup group;
+    List<Comanda> comandaSelecionada;
+    float valorFinal;
     public TelaPagamento() {
             initComponents();
         group = new ButtonGroup();
         group.add(rBtDinheiro);
         group.add(rBtCartao);
         pagamento = new Pagamento();
+        comandaSelecionada = new ArrayList <>();
+        valorFinal = 0;
         ListUtils.populateIngredientes();
         ListUtils.populateProdutos();
         ListUtils.populateComandas();
@@ -399,11 +404,18 @@ public class TelaPagamento extends javax.swing.JFrame {
     }//GEN-LAST:event_btSairActionPerformed
 
     private void btOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btOkActionPerformed
-        atualizarTabelaComanda();
-        atualizarItemComandaTabela();
-        totalText.setText(String.valueOf(pagamento.getNotaFiscal().getValor()));
+        for(Comanda com : DBContext.getInstance().getDbComanda()){
+            if(comandaText.getText().isEmpty() ? false : Float.parseFloat(comandaText.getText()) == com.getCodigo()){
+                if(!comandaSelecionada.contains(com)){
+                    comandaSelecionada.add(com);
+                    atualizarTabelaComanda();
+                    atualizarItemComandaTabela();
+                    totalText.setText(String.valueOf(pagamento.getNotaFiscal().getValor()));
+                }
+            }
+        }
     }//GEN-LAST:event_btOkActionPerformed
-
+//**********************ANALISAR ESSE CODIGO.********************
     private void atualizarTabelaComanda(){
         DefaultTableModel model = (DefaultTableModel) comandaTabela.getModel();
         int rowCount = model.getRowCount();
@@ -412,8 +424,8 @@ public class TelaPagamento extends javax.swing.JFrame {
             model.removeRow(i);
         }
         
-        List<Comanda> comanda = DBContext.getInstance().getDbComanda();
-        for(Comanda com : comanda){
+        List<Comanda> comandas = comandaSelecionada;
+        for(Comanda com : comandas){
             model.addRow(new Object[]{com.getCodigo()});
         }
     }
@@ -426,18 +438,22 @@ public class TelaPagamento extends javax.swing.JFrame {
             model.removeRow(i);
         }
         
-        List<Comanda> comanda = DBContext.getInstance().getDbComanda();
+        List<Comanda> comanda = comandaSelecionada;
         for(Comanda com : comanda){
             List<Pedido> pedidos = com.getPedidos();
             for(Pedido ped : pedidos){
                 model.addRow(new Object[]{ped.getQuantidade(), ped.getProduto().getNomeProduto(), ped.getProduto().getPreco()});
-                pagamento.getNotaFiscal().setValor(pagamento.getNotaFiscal().getValor() + ped.getQuantidade()*ped.getProduto().getPreco());
+                valorFinal += ped.getQuantidade()*ped.getProduto().getPreco();
             }
         }
+        pagamento.getNotaFiscal().setValor(valorFinal);
     }
     
     private void btCalcularActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCalcularActionPerformed
-        float troco = (Float.parseFloat(valorText.getText())) - (Float.parseFloat(totalText.getText())) ;
+        if(totalText.getText().isEmpty() || valorText.getText().isEmpty()){
+            return;
+        }
+        float troco = (Float.parseFloat(valorText.getText())) - (Float.parseFloat(totalText.getText()));
         trocoText.setText(String.valueOf(troco));
         
     }//GEN-LAST:event_btCalcularActionPerformed
@@ -465,6 +481,9 @@ public class TelaPagamento extends javax.swing.JFrame {
     private void btFinalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btFinalizarActionPerformed
          if(jCheckBoxCpf.isSelected()){
              pagamento.getNotaFiscal().setCpf(cpfText.getText());
+         }
+         if(totalText.getText().isEmpty() || valorText.getText().isEmpty()){
+             return;
          }
          pagamento.getNotaFiscal().setValor(Float.parseFloat(totalText.getText()));
          pagamento.getNotaFiscal().setValorPago(Float.parseFloat(valorText.getText()));
