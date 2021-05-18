@@ -83,10 +83,12 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <EmptySpace max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="btEstoque" alignment="3" min="-2" pref="91" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="btPagar" alignment="0" min="-2" pref="91" max="-2" attributes="0"/>
-                          <Component id="btProduto" alignment="3" min="-2" pref="86" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="btEstoque" alignment="3" min="-2" pref="91" max="-2" attributes="0"/>
+                              <Component id="btProduto" alignment="3" min="-2" pref="86" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                       <EmptySpace min="-2" pref="61" max="-2" attributes="0"/>
                   </Group>
