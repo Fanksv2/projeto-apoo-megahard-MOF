@@ -9,6 +9,7 @@ import com.megahard.mofproject.control.DBContext;
 import com.megahard.mofproject.model.Comanda;
 import com.megahard.mofproject.model.EstoqueItem;
 import com.megahard.mofproject.model.Ingrediente;
+import com.megahard.mofproject.model.Pagamento;
 import com.megahard.mofproject.model.Pedido;
 import com.megahard.mofproject.model.Produto;
 import com.megahard.mofproject.utils.ListUtils;
@@ -31,8 +32,12 @@ public class TelaPedido extends javax.swing.JFrame {
     /**
      * Creates new form TelaPedido
      */
+    Pagamento pagamento;
+    Produto produto;
     public TelaPedido() {
         initComponents();
+        ListUtils.populateIngredientes();
+        ListUtils.populateProdutos();
         ListUtils.populateComandas();
     }
 
@@ -47,7 +52,7 @@ public class TelaPedido extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        tabelaProduto = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
         comandaText = new javax.swing.JTextField();
         btConfirma = new javax.swing.JButton();
@@ -56,10 +61,10 @@ public class TelaPedido extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        itemText = new javax.swing.JTextField();
         btMenos = new javax.swing.JButton();
         btMais = new javax.swing.JButton();
-        jTextField2 = new javax.swing.JTextField();
+        qntText = new javax.swing.JTextField();
         btAlterar = new javax.swing.JButton();
         btCancelar = new javax.swing.JButton();
 
@@ -68,7 +73,7 @@ public class TelaPedido extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Arial Black", 0, 24)); // NOI18N
         jLabel1.setText("CONTROLE DE PEDIDO");
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        tabelaProduto.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null},
                 {null, null},
@@ -76,7 +81,7 @@ public class TelaPedido extends javax.swing.JFrame {
                 {null, null}
             },
             new String [] {
-                "PRODUTO", "QTD"
+                "QTD", "PRODUTO"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -87,9 +92,9 @@ public class TelaPedido extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable2);
-        if (jTable2.getColumnModel().getColumnCount() > 0) {
-            jTable2.getColumnModel().getColumn(1).setMaxWidth(120);
+        jScrollPane1.setViewportView(tabelaProduto);
+        if (tabelaProduto.getColumnModel().getColumnCount() > 0) {
+            tabelaProduto.getColumnModel().getColumn(0).setMaxWidth(120);
         }
 
         jLabel2.setText("Comanda:");
@@ -123,8 +128,18 @@ public class TelaPedido extends javax.swing.JFrame {
         jLabel5.setText("Quantidade:");
 
         btMenos.setText("-");
+        btMenos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btMenosActionPerformed(evt);
+            }
+        });
 
         btMais.setText("+");
+        btMais.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btMaisActionPerformed(evt);
+            }
+        });
 
         btAlterar.setText("Alterar o pedido");
         btAlterar.addActionListener(new java.awt.event.ActionListener() {
@@ -134,6 +149,11 @@ public class TelaPedido extends javax.swing.JFrame {
         });
 
         btCancelar.setText("Cancelar o pedido");
+        btCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btCancelarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -156,7 +176,7 @@ public class TelaPedido extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jTextField2)
+                                        .addComponent(qntText)
                                         .addGap(18, 18, 18)
                                         .addComponent(btMais))
                                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -165,7 +185,7 @@ public class TelaPedido extends javax.swing.JFrame {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(btCancelar)
                                         .addGap(63, 63, 63))))
-                            .addComponent(jTextField1))))
+                            .addComponent(itemText))))
                 .addGap(53, 53, 53))
         );
         jPanel1Layout.setVerticalGroup(
@@ -176,12 +196,12 @@ public class TelaPedido extends javax.swing.JFrame {
                 .addGap(41, 41, 41)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(itemText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(19, 19, 19)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(btMenos)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(qntText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btMais))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 54, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -243,23 +263,58 @@ public class TelaPedido extends javax.swing.JFrame {
     }//GEN-LAST:event_btSairActionPerformed
 
     private void btAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAlterarActionPerformed
-        // TODO add your handling code here:
+        String ingredienteNome = ViewUtils.getRowFirstField(tabelaProduto);
+        if(ingredienteNome.isEmpty()){
+            return;
+        }
+        
+        EstoqueItem estoqueItem = findIngredienteInEstoque(ingredienteNome);
+        if(estoqueItem == null){
+            return;
+        }
+        
+        int qtd = Integer.parseInt(qntText.getText());
+        estoqueItem.setQntItemEstoque(qtd);
+        
+        atualizarTabelaComandas();
     }//GEN-LAST:event_btAlterarActionPerformed
 
+    public void onRowSelected(){     
+        String ingredienteNome = ViewUtils.getRowFirstField(tabelaProduto);
+        if(ingredienteNome.isEmpty()){
+            return;
+        }
+        
+        EstoqueItem estoqueItem = findIngredienteInEstoque(ingredienteNome);
+        if(estoqueItem == null){
+            return;
+        }
+        
+        //itemText.setText(Pedido.getProduto().getNomeProduto());
+        //qntText.setText(String.valueOf(Pedido.getQuantidade()));  
+    }
+    
+    public EstoqueItem findIngredienteInEstoque(String ingredienteNome){
+        EstoqueItem estoqueItem = null;
+        for(EstoqueItem ei : DBContext.getInstance().getDbEstoque()){
+            Ingrediente ing = ei.getIngrediente();
+            if(ing.getNome().equals(ingredienteNome)){
+                estoqueItem = ei;
+            }
+        }
+        
+        return estoqueItem;
+    }
+    
     private void comandaTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comandaTextActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_comandaTextActionPerformed
 
     private void btConfirmaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btConfirmaActionPerformed
-        // TODO add your handling code here:
-        String numeroComanda = comandaText.getText();
-        
-        int codigoComanda = Integer.parseInt(numeroComanda);
-        
-        
+        atualizarTabelaComandas();
         
     }//GEN-LAST:event_btConfirmaActionPerformed
-
+    
     private void atualizarTabelaComandas(){
         DefaultTableModel model = (DefaultTableModel) tabelaProduto.getModel();
         int rowCount = model.getRowCount();
@@ -268,10 +323,36 @@ public class TelaPedido extends javax.swing.JFrame {
             model.removeRow(i);
         }
         
-        List<Comanda> comandas = DBContext.getInstance().getDbComanda();
-        for(Comanda comanda : comandas){   
-            model.addRow(new Object[]{comanda.getPedidos()});
+        List<Comanda> comanda = DBContext.getInstance().getDbComanda();
+        for(Comanda com : comanda){
+            List<Pedido> pedidos = com.getPedidos();
+            for(Pedido ped : pedidos){
+                model.addRow(new Object[]{ped.getQuantidade(), ped.getProduto().getNomeProduto()});
+            }
         }
+    }
+    
+    private void btCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCancelarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btCancelarActionPerformed
+
+    private void btMenosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btMenosActionPerformed
+        addCountToQtd(-1);
+    }//GEN-LAST:event_btMenosActionPerformed
+
+    private void btMaisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btMaisActionPerformed
+        addCountToQtd(1);
+    }//GEN-LAST:event_btMaisActionPerformed
+    
+    public void addCountToQtd(int number){
+        String sNumber = qntText.getText();
+        if(sNumber.isEmpty())
+            return;
+        
+        int qnt = Integer.parseInt(sNumber);
+        qnt += number;
+        
+        qntText.setText(String.valueOf(qnt));
     }
     
     /**
@@ -317,6 +398,7 @@ public class TelaPedido extends javax.swing.JFrame {
     private javax.swing.JButton btMenos;
     private javax.swing.JButton btSair;
     private javax.swing.JTextField comandaText;
+    private javax.swing.JTextField itemText;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -324,8 +406,7 @@ public class TelaPedido extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable2;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JTextField qntText;
+    private javax.swing.JTable tabelaProduto;
     // End of variables declaration//GEN-END:variables
 }

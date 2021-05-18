@@ -9,6 +9,10 @@ import com.megahard.mofproject.control.DBContext;
 import com.megahard.mofproject.model.Comanda;
 import com.megahard.mofproject.model.EstoqueItem;
 import com.megahard.mofproject.model.Pagamento;
+import com.megahard.mofproject.model.Pedido;
+import com.megahard.mofproject.model.Produto;
+import com.megahard.mofproject.utils.ListUtils;
+import com.megahard.mofproject.utils.ViewUtils;
 import java.text.ParseException;
 import java.util.List;
 import java.util.logging.Level;
@@ -37,6 +41,9 @@ public class TelaPagamento extends javax.swing.JFrame {
         group.add(rBtDinheiro);
         group.add(rBtCartao);
         pagamento = new Pagamento();
+        ListUtils.populateIngredientes();
+        ListUtils.populateProdutos();
+        ListUtils.populateComandas();
     }
 
     /**
@@ -121,17 +128,17 @@ public class TelaPagamento extends javax.swing.JFrame {
 
         itemComandaTabela.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Itens da comanda", "Valor"
+                "QTD", "Itens da comanda", "Valor"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false
+                false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -140,7 +147,8 @@ public class TelaPagamento extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(itemComandaTabela);
         if (itemComandaTabela.getColumnModel().getColumnCount() > 0) {
-            itemComandaTabela.getColumnModel().getColumn(1).setMaxWidth(250);
+            itemComandaTabela.getColumnModel().getColumn(0).setMaxWidth(120);
+            itemComandaTabela.getColumnModel().getColumn(2).setMaxWidth(250);
         }
 
         jPanel1.setBorder(new javax.swing.border.MatteBorder(null));
@@ -392,6 +400,8 @@ public class TelaPagamento extends javax.swing.JFrame {
 
     private void btOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btOkActionPerformed
         atualizarTabelaComanda();
+        atualizarItemComandaTabela();
+        totalText.setText(String.valueOf(pagamento.getNotaFiscal().getValor()));
     }//GEN-LAST:event_btOkActionPerformed
 
     private void atualizarTabelaComanda(){
@@ -405,6 +415,24 @@ public class TelaPagamento extends javax.swing.JFrame {
         List<Comanda> comanda = DBContext.getInstance().getDbComanda();
         for(Comanda com : comanda){
             model.addRow(new Object[]{com.getCodigo()});
+        }
+    }
+    
+    private void atualizarItemComandaTabela(){
+        DefaultTableModel model = (DefaultTableModel) itemComandaTabela.getModel();
+        int rowCount = model.getRowCount();
+        //Remove rows one by one from the end of the table
+        for (int i = rowCount - 1; i >= 0; i--) {
+            model.removeRow(i);
+        }
+        
+        List<Comanda> comanda = DBContext.getInstance().getDbComanda();
+        for(Comanda com : comanda){
+            List<Pedido> pedidos = com.getPedidos();
+            for(Pedido ped : pedidos){
+                model.addRow(new Object[]{ped.getQuantidade(), ped.getProduto().getNomeProduto(), ped.getProduto().getPreco()});
+                pagamento.getNotaFiscal().setValor(pagamento.getNotaFiscal().getValor() + ped.getQuantidade()*ped.getProduto().getPreco());
+            }
         }
     }
     
@@ -456,8 +484,11 @@ public class TelaPagamento extends javax.swing.JFrame {
         valorText.setText("");
         trocoText.setText("");
         cpfText.setText("");
+        comandaText.setText("");
         jCheckBoxCpf.setSelected(false);
         group.clearSelection();
+        ViewUtils.cleanTable(comandaTabela);
+        ViewUtils.cleanTable(itemComandaTabela);
     }
     
     /**
@@ -525,4 +556,5 @@ public class TelaPagamento extends javax.swing.JFrame {
     private javax.swing.JTextField trocoText;
     private javax.swing.JTextField valorText;
     // End of variables declaration//GEN-END:variables
+
 }
