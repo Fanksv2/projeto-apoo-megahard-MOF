@@ -350,12 +350,23 @@ public class TelaPedido extends javax.swing.JFrame {
             model.removeRow(i);
         }
         
-        List<Comanda> comanda = DBContext.getInstance().getDbComanda();
-        for(Comanda com : comanda){
-            List<Pedido> pedidos = com.getPedidos();
-            for(Pedido ped : pedidos){
-                model.addRow(new Object[]{ped.getQuantidade(), ped.getProduto().getNomeProduto()});
+        if(comandaText.getText().isEmpty()){
+            return;
+        }
+        
+        Comanda comanda = findComandaInDb(Integer.valueOf(comandaText.getText()));
+        if(comanda == null){
+            return;
+        }
+        
+        for(Comanda com : DBContext.getInstance().getDbComanda()){
+            if(comanda.equals(com)){
+                List<Pedido> pedidos = com.getPedidos();
+                for(Pedido ped : pedidos){
+                    model.addRow(new Object[]{ped.getQuantidade(), ped.getProduto().getNomeProduto()});
+                }
             }
+            
         }
     }
     

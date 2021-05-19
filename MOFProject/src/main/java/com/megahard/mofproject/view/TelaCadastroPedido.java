@@ -249,13 +249,14 @@ public class TelaCadastroPedido extends javax.swing.JFrame {
         else{ //Esse aqui é para caso seja uma comanda nova, creio que esse funcione
             comanda = new Comanda();
             comanda.setCodigo(codigoComanda);
+            DBContext.getInstance().getDbComanda().add(comanda);
             JOptionPane.showMessageDialog(this, "Cadastro de pedido com sucesso em uma nova comanda!");
         }
         
         Produto produto = null;
         for(Produto p : DBContext.getInstance().getDbProduto()){
             if(p.getNomeProduto().equals(nomeProduto)){
-            produto = p;
+                produto = p;
             }
         }
 
@@ -270,7 +271,7 @@ public class TelaCadastroPedido extends javax.swing.JFrame {
         comanda.getPedidos().add(pedido);
 
 
-        DBContext.getInstance().getDbComanda().add(comanda);
+        
 
     }//GEN-LAST:event_btCadastrarActionPerformed
 
