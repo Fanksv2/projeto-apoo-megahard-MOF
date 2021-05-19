@@ -430,7 +430,7 @@ public class TelaPagamento extends javax.swing.JFrame {
             atualizarItemComandaTabela();
             totalText.setText(String.valueOf(valorFinal));
         }
-        else{
+        else if(co == null){
             JOptionPane.showMessageDialog(null, "\nComanda não existe!","Erro", JOptionPane.ERROR_MESSAGE);
             limpa();
         }
