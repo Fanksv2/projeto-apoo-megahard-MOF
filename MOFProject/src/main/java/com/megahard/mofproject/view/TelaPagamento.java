@@ -36,7 +36,7 @@ public class TelaPagamento extends javax.swing.JFrame {
      */
     Pagamento pagamento;
     ButtonGroup group;
-    List<Comanda> comandaSelecionada;
+    List<Comanda> comandasSelecionadas;
     float valorFinal;
     public TelaPagamento() {
             initComponents();
@@ -44,7 +44,7 @@ public class TelaPagamento extends javax.swing.JFrame {
         group.add(rBtDinheiro);
         group.add(rBtCartao);
         pagamento = new Pagamento();
-        comandaSelecionada = new ArrayList <>();
+        comandasSelecionadas = new ArrayList <>();
         valorFinal = 0;
         ListUtils.populateIngredientes();
         ListUtils.populateProdutos();
@@ -404,18 +404,39 @@ public class TelaPagamento extends javax.swing.JFrame {
     }//GEN-LAST:event_btSairActionPerformed
 
     private void btOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btOkActionPerformed
-        for(Comanda com : DBContext.getInstance().getDbComanda()){
-            if(comandaText.getText().isEmpty() ? false : Float.parseFloat(comandaText.getText()) == com.getCodigo()){
-                if(!comandaSelecionada.contains(com)){
-                    comandaSelecionada.add(com);
-                    atualizarTabelaComanda();
-                    atualizarItemComandaTabela();
-                    totalText.setText(String.valueOf(pagamento.getNotaFiscal().getValor()));
-                }
+        if(comandaText.getText().isEmpty()){
+            return;
+        }
+        
+        int numComanda = Integer.parseInt(comandaText.getText());
+        
+        Comanda c = null;
+        for(Comanda comand : comandasSelecionadas){
+            if(numComanda == comand.getCodigo()){
+                c = comand;
             }
         }
+        
+        Comanda co = null;
+        for(Comanda com : DBContext.getInstance().getDbComanda()){
+            if(numComanda == com.getCodigo()){
+                co = com;
+            }
+        }
+        
+        if(c == null && co != null){
+            comandasSelecionadas.add(co);
+            atualizarTabelaComanda();
+            atualizarItemComandaTabela();
+            totalText.setText(String.valueOf(valorFinal));
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "\nComanda não existe!","Erro", JOptionPane.ERROR_MESSAGE);
+            limpa();
+        }
+        
     }//GEN-LAST:event_btOkActionPerformed
-//**********************ANALISAR ESSE CODIGO.********************
+
     private void atualizarTabelaComanda(){
         DefaultTableModel model = (DefaultTableModel) comandaTabela.getModel();
         int rowCount = model.getRowCount();
@@ -424,7 +445,7 @@ public class TelaPagamento extends javax.swing.JFrame {
             model.removeRow(i);
         }
         
-        List<Comanda> comandas = comandaSelecionada;
+        List<Comanda> comandas = comandasSelecionadas;
         for(Comanda com : comandas){
             model.addRow(new Object[]{com.getCodigo()});
         }
@@ -438,7 +459,8 @@ public class TelaPagamento extends javax.swing.JFrame {
             model.removeRow(i);
         }
         
-        List<Comanda> comanda = comandaSelecionada;
+        List<Comanda> comanda = comandasSelecionadas;
+        valorFinal = 0;
         for(Comanda com : comanda){
             List<Pedido> pedidos = com.getPedidos();
             for(Pedido ped : pedidos){

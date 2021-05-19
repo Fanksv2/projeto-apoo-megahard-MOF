@@ -247,7 +247,6 @@ public class TelaCadastroPedido extends javax.swing.JFrame {
         
         if(comandaExistente != null){
             comanda = comandaExistente;
-                       
             JOptionPane.showMessageDialog(this, "Cadastro de pedido com sucesso em uma comanda já existente!");
         }
         
