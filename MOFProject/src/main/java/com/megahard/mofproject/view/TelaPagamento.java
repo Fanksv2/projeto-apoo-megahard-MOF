@@ -509,7 +509,8 @@ public class TelaPagamento extends javax.swing.JFrame {
          }
          pagamento.getNotaFiscal().setValor(Float.parseFloat(totalText.getText()));
          pagamento.getNotaFiscal().setValorPago(Float.parseFloat(valorText.getText()));
-                
+         if(cpfText.getText() == null)
+             pagamento.getNotaFiscal().setCpf("Não informado");
          JOptionPane.showMessageDialog(null, "\nValor pago: "+pagamento.getNotaFiscal().getValor()+"\n\nCPF: "+pagamento.getNotaFiscal().getCpf(),"Nota Fiscal", JOptionPane.INFORMATION_MESSAGE);
          DBContext.getInstance().getDbNotaFiscal().add(pagamento.getNotaFiscal());
          limpa();
