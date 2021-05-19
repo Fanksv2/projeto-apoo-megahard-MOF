@@ -18,6 +18,18 @@ public class ViewUtils {
     }
     public static String getRowFirstField(JTable table){
         int column = 0;
+        return getRowFromField(table, column);
+         
+    }
+    public static void cleanTable(JTable table){
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        int rowCount = model.getRowCount();
+        //Remove rows one by one from the end of the table
+        for (int i = rowCount - 1; i >= 0; i--) {
+            model.removeRow(i);
+        }
+    }
+    public static String getRowFromField(JTable table, int column){
         int row = getRow(table);
         
         if(row < 0){
@@ -31,13 +43,5 @@ public class ViewUtils {
         }
         
         return firstField;
-    }
-    public static void cleanTable(JTable table){
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-        int rowCount = model.getRowCount();
-        //Remove rows one by one from the end of the table
-        for (int i = rowCount - 1; i >= 0; i--) {
-            model.removeRow(i);
-        }
     }
 }

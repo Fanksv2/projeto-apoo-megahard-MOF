@@ -98,7 +98,7 @@
         <Component class="javax.swing.JTable" name="tabelaProduto">
           <Properties>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="2" rowCount="4">
+              <Table columnCount="2" rowCount="0">
                 <Column editable="false" title="QTD" type="java.lang.Object"/>
                 <Column editable="false" title="PRODUTO" type="java.lang.Object"/>
               </Table>
@@ -132,6 +132,7 @@
     <Component class="javax.swing.JTextField" name="comandaText">
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="comandaTextActionPerformed"/>
+        <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="comandaTextKeyTyped"/>
       </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btConfirma">
@@ -179,20 +180,12 @@
                               <Group type="102" attributes="0">
                                   <Component id="btMenos" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="102" attributes="0">
-                                          <Component id="qntText" max="32767" attributes="0"/>
-                                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                                          <Component id="btMais" min="-2" max="-2" attributes="0"/>
-                                      </Group>
-                                      <Group type="102" attributes="0">
-                                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                                          <Component id="btAlterar" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace min="-2" pref="188" max="-2" attributes="0"/>
-                                      </Group>
-                                  </Group>
+                                  <Component id="qntText" pref="238" max="32767" attributes="0"/>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Component id="btMais" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Component id="itemText" max="32767" attributes="0"/>
+                              <Component id="btAlterar" alignment="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -241,6 +234,9 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="itemText">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+          </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="btMenos">
           <Properties>
@@ -259,6 +255,9 @@
           </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="qntText">
+          <Events>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="qntTextKeyTyped"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btAlterar">
           <Properties>

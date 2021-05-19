@@ -34,11 +34,19 @@ public class TelaPedido extends javax.swing.JFrame {
      */
     Pagamento pagamento;
     Produto produto;
+    Comanda comandaSelecionada = null;
+    Pedido pedidoSelecionado = null;
     public TelaPedido() {
         initComponents();
         ListUtils.populateIngredientes();
         ListUtils.populateProdutos();
         ListUtils.populateComandas();
+        tabelaProduto.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+            @Override
+            public void valueChanged(ListSelectionEvent event) {
+                onRowSelected();
+            }
+    }   );
     }
 
     /**
@@ -75,10 +83,7 @@ public class TelaPedido extends javax.swing.JFrame {
 
         tabelaProduto.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
+
             },
             new String [] {
                 "QTD", "PRODUTO"
@@ -104,6 +109,11 @@ public class TelaPedido extends javax.swing.JFrame {
                 comandaTextActionPerformed(evt);
             }
         });
+        comandaText.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                comandaTextKeyTyped(evt);
+            }
+        });
 
         btConfirma.setText("OK");
         btConfirma.addActionListener(new java.awt.event.ActionListener() {
@@ -127,6 +137,8 @@ public class TelaPedido extends javax.swing.JFrame {
 
         jLabel5.setText("Quantidade:");
 
+        itemText.setEditable(false);
+
         btMenos.setText("-");
         btMenos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -138,6 +150,12 @@ public class TelaPedido extends javax.swing.JFrame {
         btMais.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btMaisActionPerformed(evt);
+            }
+        });
+
+        qntText.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                qntTextKeyTyped(evt);
             }
         });
 
@@ -167,16 +185,11 @@ public class TelaPedido extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(btMenos)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(qntText)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btMais))
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGap(0, 0, Short.MAX_VALUE)
-                                        .addComponent(btAlterar)
-                                        .addGap(188, 188, 188))))
-                            .addComponent(itemText))))
+                                .addComponent(qntText, javax.swing.GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btMais))
+                            .addComponent(itemText)
+                            .addComponent(btAlterar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addGap(53, 53, 53))
         );
         jPanel1Layout.setVerticalGroup(
@@ -263,47 +276,65 @@ public class TelaPedido extends javax.swing.JFrame {
     }//GEN-LAST:event_btSairActionPerformed
 
     private void btAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAlterarActionPerformed
-        String ingredienteNome = ViewUtils.getRowFirstField(tabelaProduto);
-        if(ingredienteNome.isEmpty()){
+        if(pedidoSelecionado == null){
             return;
         }
         
-        EstoqueItem estoqueItem = findIngredienteInEstoque(ingredienteNome);
-        if(estoqueItem == null){
+        if(qntText.getText().isEmpty()){
             return;
         }
         
-        int qtd = Integer.parseInt(qntText.getText());
-        estoqueItem.setQntItemEstoque(qtd);
-        
+        pedidoSelecionado.setQuantidade(Integer.valueOf(qntText.getText()));
         atualizarTabelaComandas();
     }//GEN-LAST:event_btAlterarActionPerformed
 
     public void onRowSelected(){     
-        String ingredienteNome = ViewUtils.getRowFirstField(tabelaProduto);
-        if(ingredienteNome.isEmpty()){
+        String sCodigoComanda = comandaText.getText();
+        if(sCodigoComanda.isEmpty()){
+            return;
+        }
+        int codigoComanda = Integer.parseInt(sCodigoComanda);
+        
+        Comanda comanda = findComandaInDb(codigoComanda);
+        if(comanda == null){
             return;
         }
         
-        EstoqueItem estoqueItem = findIngredienteInEstoque(ingredienteNome);
-        if(estoqueItem == null){
+        String nomeProduto = ViewUtils.getRowFromField(tabelaProduto, 1);
+        if(nomeProduto.isEmpty()){
             return;
         }
         
-        //itemText.setText(Pedido.getProduto().getNomeProduto());
-        //qntText.setText(String.valueOf(Pedido.getQuantidade()));  
+        Pedido pedido = findPedidoInComanda(nomeProduto, comanda);
+        if(pedido == null){
+            return;
+        }
+        
+        comandaSelecionada = comanda;
+        
+        pedidoSelecionado = pedido;
+        itemText.setText(pedido.getProduto().getNomeProduto());
+        qntText.setText(String.valueOf(pedido.getQuantidade()));  
     }
     
-    public EstoqueItem findIngredienteInEstoque(String ingredienteNome){
-        EstoqueItem estoqueItem = null;
-        for(EstoqueItem ei : DBContext.getInstance().getDbEstoque()){
-            Ingrediente ing = ei.getIngrediente();
-            if(ing.getNome().equals(ingredienteNome)){
-                estoqueItem = ei;
+    public Pedido findPedidoInComanda(String nomeProduto, Comanda comanda){
+        Pedido pedido = null;
+        for(Pedido p : comanda.getPedidos()){
+            if(p.getProduto().getNomeProduto().equals(nomeProduto)){
+                pedido = p;
             }
         }
-        
-        return estoqueItem;
+        return pedido;
+    }
+    
+    public Comanda findComandaInDb(int codigo){
+        Comanda comanda = null;
+        for(Comanda c : DBContext.getInstance().getDbComanda()){
+            if(c.getCodigo() == codigo){
+                comanda = c;
+            }
+        }
+        return comanda;
     }
     
     private void comandaTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comandaTextActionPerformed
@@ -312,7 +343,6 @@ public class TelaPedido extends javax.swing.JFrame {
 
     private void btConfirmaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btConfirmaActionPerformed
         atualizarTabelaComandas();
-        
     }//GEN-LAST:event_btConfirmaActionPerformed
     
     private void atualizarTabelaComandas(){
@@ -333,7 +363,20 @@ public class TelaPedido extends javax.swing.JFrame {
     }
     
     private void btCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCancelarActionPerformed
-        // TODO add your handling code here:
+        if(pedidoSelecionado == null){
+            return;
+        }
+        if(comandaSelecionada == null){
+            return;
+        }
+        
+        if(comandaSelecionada.getPedidos().contains(pedidoSelecionado)){
+            comandaSelecionada.getPedidos().remove(pedidoSelecionado);
+            pedidoSelecionado = null;
+            atualizarTabelaComandas();
+            qntText.setText("");
+            itemText.setText("");
+        }
     }//GEN-LAST:event_btCancelarActionPerformed
 
     private void btMenosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btMenosActionPerformed
@@ -343,6 +386,22 @@ public class TelaPedido extends javax.swing.JFrame {
     private void btMaisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btMaisActionPerformed
         addCountToQtd(1);
     }//GEN-LAST:event_btMaisActionPerformed
+
+    private void qntTextKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_qntTextKeyTyped
+        char c = evt.getKeyChar();
+        
+        if(!Character.isDigit(c)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_qntTextKeyTyped
+
+    private void comandaTextKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_comandaTextKeyTyped
+        char c = evt.getKeyChar();
+        
+        if(!Character.isDigit(c)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_comandaTextKeyTyped
     
     public void addCountToQtd(int number){
         String sNumber = qntText.getText();
