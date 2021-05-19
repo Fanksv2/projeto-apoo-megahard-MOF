@@ -32,6 +32,8 @@ public class TelaEstoque extends javax.swing.JFrame {
         initComponents();
         tabelaEstoque.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
+        ListUtils.populateIngredientes();
+        
         tabelaEstoque.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
             @Override
             public void valueChanged(ListSelectionEvent event) {
