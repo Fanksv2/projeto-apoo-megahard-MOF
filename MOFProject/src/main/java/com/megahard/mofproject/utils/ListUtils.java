@@ -5,6 +5,7 @@ import com.megahard.mofproject.control.DBContext;
 import com.megahard.mofproject.model.Ingrediente;
 import com.megahard.mofproject.model.Produto;
 import com.megahard.mofproject.model.QuantidadeIngrediente;
+import com.megahard.mofproject.model.EstoqueItem;
 import java.util.ArrayList;
 import com.megahard.mofproject.model.Comanda;
 import com.megahard.mofproject.model.Pedido;import java.util.Arrays;
@@ -21,8 +22,12 @@ public class ListUtils {
     public static void populateIngredientes(){
         List<String> ingNomes = Arrays.asList("Pão", "Salsicha", "Bacon", "Coquinha");
         for(String ingNome: ingNomes){
+            EstoqueItem estoqueItem = new EstoqueItem();
             Ingrediente ingrediente = new Ingrediente();
             ingrediente.setNome(ingNome);
+            estoqueItem.setIngrediente(ingrediente);
+            estoqueItem.setQntItemEstoque(100);
+            DBContext.getInstance().getDbEstoque().add(estoqueItem);
             DBContext.getInstance().getDbIngrediente().add(ingrediente);
         }
     }
