@@ -33,9 +33,6 @@ public class TelaCadastroPedido extends javax.swing.JFrame {
      */
     public TelaCadastroPedido() {
         initComponents();
-        ListUtils.populateIngredientes();
-        ListUtils.populateProdutos();
-        ListUtils.populateComandas();
         atualizarTabelaProdutos();
         
         tabelaProduto.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -81,10 +78,7 @@ public class TelaCadastroPedido extends javax.swing.JFrame {
 
         tabelaProduto.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null},
-                {null},
-                {null},
-                {null}
+
             },
             new String [] {
                 "PRODUTO"
@@ -107,6 +101,8 @@ public class TelaCadastroPedido extends javax.swing.JFrame {
         jLabel3.setText("Produto:");
 
         jLabel4.setText("Quantidade:");
+
+        produtoNome.setEditable(false);
 
         btCadastrar.setText("Cadastrar novo pedido");
         btCadastrar.addActionListener(new java.awt.event.ActionListener() {

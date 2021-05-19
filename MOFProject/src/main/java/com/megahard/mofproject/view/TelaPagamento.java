@@ -46,9 +46,6 @@ public class TelaPagamento extends javax.swing.JFrame {
         pagamento = new Pagamento();
         comandasSelecionadas = new ArrayList <>();
         valorFinal = 0;
-        ListUtils.populateIngredientes();
-        ListUtils.populateProdutos();
-        ListUtils.populateComandas();
     }
 
     /**
@@ -504,7 +501,7 @@ public class TelaPagamento extends javax.swing.JFrame {
          if(jCheckBoxCpf.isSelected()){
              pagamento.getNotaFiscal().setCpf(cpfText.getText());
          }
-         if(totalText.getText().isEmpty() || valorText.getText().isEmpty()){
+         if(totalText.getText().isEmpty() || valorText.getText().isEmpty() || comandaText.getText().isEmpty()){
              return;
          }
          pagamento.getNotaFiscal().setValor(Float.parseFloat(totalText.getText()));

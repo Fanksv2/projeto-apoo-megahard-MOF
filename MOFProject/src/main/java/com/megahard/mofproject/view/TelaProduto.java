@@ -43,8 +43,6 @@ public class TelaProduto extends javax.swing.JFrame {
         tabelaIngredientesSelecionados.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tabelaProdutosExistentes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
-        ListUtils.populateIngredientes();
-        ListUtils.populateProdutos();
         atualizarTabelaIngredientesExistentes();
         atualizarTabelaProdutosExistentes();
     }
@@ -142,6 +140,11 @@ public class TelaProduto extends javax.swing.JFrame {
         });
 
         btApagar.setText("Apagar Produto");
+        btApagar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btApagarActionPerformed(evt);
+            }
+        });
 
         btSair.setText("Sair");
         btSair.addActionListener(new java.awt.event.ActionListener() {
@@ -386,6 +389,27 @@ public class TelaProduto extends javax.swing.JFrame {
         if(!precoProdutoText.getText().isEmpty())
             precoProdutoText.setText(NumberFormat.getCurrencyInstance().format(Double.parseDouble(precoProdutoText.getText())));
     }//GEN-LAST:event_precoProdutoTextActionPerformed
+
+    private void btApagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btApagarActionPerformed
+        String produtoSelecionadoNome = ViewUtils.getRowFirstField(tabelaProdutosExistentes);
+        if(produtoSelecionadoNome.isEmpty()){
+            return;
+        }
+        
+        Produto produto = null;
+        for(Produto p : DBContext.getInstance().getDbProduto()){
+            if(p.getNomeProduto().equals(produtoSelecionadoNome)){
+                produto = p;
+            }
+        }
+        if(produto == null){
+            return;
+        }
+        
+        DBContext.getInstance().getDbProduto().remove(produto);
+        atualizarTabelaProdutosExistentes();
+        
+    }//GEN-LAST:event_btApagarActionPerformed
 
     public void atualizarTabelaIngredientesExistentes(){
         ViewUtils.cleanTable(tabelaIngredientesExistentes);

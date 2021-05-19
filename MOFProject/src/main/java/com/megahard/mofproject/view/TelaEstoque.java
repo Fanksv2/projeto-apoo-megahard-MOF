@@ -359,6 +359,7 @@ public class TelaEstoque extends javax.swing.JFrame {
         estoqueItem.setQntItemEstoque(qtdItem);
         
         DBContext.getInstance().getDbEstoque().add(estoqueItem);
+        DBContext.getInstance().getDbIngrediente().add(ingrediente);
         
         atualizarTabelaEstoque();
     }//GEN-LAST:event_btCadastroActionPerformed

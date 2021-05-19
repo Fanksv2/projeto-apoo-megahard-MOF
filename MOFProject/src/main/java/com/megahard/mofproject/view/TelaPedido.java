@@ -38,9 +38,6 @@ public class TelaPedido extends javax.swing.JFrame {
     Pedido pedidoSelecionado = null;
     public TelaPedido() {
         initComponents();
-        ListUtils.populateIngredientes();
-        ListUtils.populateProdutos();
-        ListUtils.populateComandas();
         tabelaProduto.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
             @Override
             public void valueChanged(ListSelectionEvent event) {

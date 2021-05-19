@@ -10,8 +10,6 @@ import java.util.List;
 
 public class Principal {
     public static void main(String[] args){
-        ListUtils.populateIngredientes();
-        ListUtils.populateProdutos();
         ListUtils.printList(DBContext.getInstance().getDbIngrediente());
         ListUtils.printList(DBContext.getInstance().getDbProduto());
         
