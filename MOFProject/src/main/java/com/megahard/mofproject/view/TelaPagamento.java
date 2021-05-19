@@ -427,7 +427,7 @@ public class TelaPagamento extends javax.swing.JFrame {
             atualizarItemComandaTabela();
             totalText.setText(String.valueOf(valorFinal));
         }
-        else{
+        else if(co == null){
             JOptionPane.showMessageDialog(null, "\nComanda não existe!","Erro", JOptionPane.ERROR_MESSAGE);
             limpa();
         }
@@ -506,7 +506,8 @@ public class TelaPagamento extends javax.swing.JFrame {
          }
          pagamento.getNotaFiscal().setValor(Float.parseFloat(totalText.getText()));
          pagamento.getNotaFiscal().setValorPago(Float.parseFloat(valorText.getText()));
-                
+         if(cpfText.getText() == null)
+             pagamento.getNotaFiscal().setCpf("Não informado");
          JOptionPane.showMessageDialog(null, "\nValor pago: "+pagamento.getNotaFiscal().getValor()+"\n\nCPF: "+pagamento.getNotaFiscal().getCpf(),"Nota Fiscal", JOptionPane.INFORMATION_MESSAGE);
          DBContext.getInstance().getDbNotaFiscal().add(pagamento.getNotaFiscal());
          limpa();
